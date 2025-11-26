@@ -17,52 +17,56 @@ export const seedDatabase = async (
   versesData: VerseRaw[],
   onProgress?: ProgressCallback,
 ): Promise<void> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   const total = versesData.length;
 
   // Process in batches
   for (let i = 0; i < total; i += BATCH_SIZE) {
     const batch = versesData.slice(i, Math.min(i + BATCH_SIZE, total));
 
-    await db.withTransactionAsync(async () => {
+    await db.transaction(async (tx) => {
       for (const verse of batch) {
         const verseKey = `${verse.surah_id}:${verse.number}`;
         const normalizedTransliteration = normalizeLatin(verse.transliteration);
 
         // Insert verse
-        await db.runAsync(
+        await tx.executeAsync(
           `INSERT OR REPLACE INTO verses 
            (id, number, text, juz_id, surah_id, verse_key, transliteration, transliteration_normalized,
             translation_id, translation_en, translation_my, translation_de, translation_tr, translation_fr)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          verse.id,
-          verse.number,
-          verse.text,
-          verse.juz_id,
-          verse.surah_id,
-          verseKey,
-          verse.transliteration,
-          normalizedTransliteration,
-          verse.translation_id,
-          verse.translation_en,
-          verse.translation_my,
-          verse.translation_de,
-          verse.translation_tr,
-          verse.translation_fr,
+          [
+            verse.id,
+            verse.number,
+            verse.text,
+            verse.juz_id,
+            verse.surah_id,
+            verseKey,
+            verse.transliteration,
+            normalizedTransliteration,
+            verse.translation_id,
+            verse.translation_en,
+            verse.translation_my,
+            verse.translation_de,
+            verse.translation_tr,
+            verse.translation_fr,
+          ],
         );
 
         // Insert tajweed marks if present
         if (verse.tajweed && verse.tajweed.length > 0) {
           for (const mark of verse.tajweed) {
-            await db.runAsync(
+            await tx.executeAsync(
               `INSERT INTO tajweed_marks (verse_id, class, start_baris, end_baris, start_pojok, end_pojok)
                VALUES (?, ?, ?, ?, ?, ?)`,
-              verse.id,
-              mark.class,
-              mark.start_baris,
-              mark.end_baris,
-              mark.start_pojok,
-              mark.end_pojok,
+              [
+                verse.id,
+                mark.class,
+                mark.start_baris,
+                mark.end_baris,
+                mark.start_pojok,
+                mark.end_pojok,
+              ],
             );
           }
         }
@@ -84,6 +88,6 @@ export const seedDatabase = async (
  * Called after bulk data insertion.
  */
 export const rebuildFtsIndex = async (): Promise<void> => {
-  const db = await getDatabase();
-  await db.execAsync("INSERT INTO verses_fts(verses_fts) VALUES('rebuild')");
+  const db = getDatabase();
+  await db.executeAsync("INSERT INTO verses_fts(verses_fts) VALUES('rebuild')");
 };

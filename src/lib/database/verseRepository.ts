@@ -7,6 +7,7 @@ import type { Verse, TajweedMark, SearchResult } from 'lib/types';
 import { normalizeLatin } from 'lib/quran/normalizeLatin';
 
 interface VerseRow {
+  [key: string]: string | number | undefined;
   id: number;
   number: number;
   text: string;
@@ -24,6 +25,7 @@ interface VerseRow {
 }
 
 interface TajweedMarkRow {
+  [key: string]: string | number | undefined;
   id: number;
   verse_id: number;
   class: string;
@@ -73,7 +75,7 @@ export const searchByTransliteration = async (
   query: string,
   limit: number = 100,
 ): Promise<SearchResult[]> => {
-  const db = await getDatabase();
+  const db = getDatabase();
   const normalizedQuery = normalizeLatin(query);
 
   if (!normalizedQuery) {
@@ -83,15 +85,16 @@ export const searchByTransliteration = async (
   // Use FTS5 with escaped query and prefix matching
   const escapedQuery = escapeFts5Query(normalizedQuery);
   const ftsQuery = `${escapedQuery}*`;
-  const rows = await db.getAllAsync<VerseRow>(
+  const result = await db.executeAsync<VerseRow>(
     `SELECT v.* FROM verses v
      JOIN verses_fts fts ON v.id = fts.rowid
      WHERE verses_fts MATCH ?
      ORDER BY rank
      LIMIT ?`,
-    ftsQuery,
-    limit,
+    [ftsQuery, limit],
   );
+
+  const rows = result.rows?._array ?? [];
 
   // Calculate score based on query match
   return rows.map((row) => {
@@ -112,7 +115,7 @@ export const searchByMeaning = async (
   query: string,
   limit: number = 100,
 ): Promise<SearchResult[]> => {
-  const db = await getDatabase();
+  const db = getDatabase();
 
   if (!query.trim()) {
     return [];
@@ -121,15 +124,16 @@ export const searchByMeaning = async (
   // Use FTS5 with escaped query and prefix matching across translation columns
   const escapedQuery = escapeFts5Query(query.trim());
   const ftsQuery = `${escapedQuery}*`;
-  const rows = await db.getAllAsync<VerseRow>(
+  const result = await db.executeAsync<VerseRow>(
     `SELECT v.* FROM verses v
      JOIN verses_fts fts ON v.id = fts.rowid
      WHERE verses_fts MATCH ?
      ORDER BY rank
      LIMIT ?`,
-    ftsQuery,
-    limit,
+    [ftsQuery, limit],
   );
+
+  const rows = result.rows?._array ?? [];
 
   return rows.map((row) => ({
     verse: mapRowToVerse(row),
@@ -141,11 +145,12 @@ export const searchByMeaning = async (
  * Get verse by verse key (e.g., "1:1").
  */
 export const getByKey = async (verseKey: string): Promise<Verse | null> => {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<VerseRow>(
+  const db = getDatabase();
+  const result = await db.executeAsync<VerseRow>(
     'SELECT * FROM verses WHERE verse_key = ?',
-    verseKey,
+    [verseKey],
   );
+  const row = result.rows?._array[0];
   return row ? mapRowToVerse(row) : null;
 };
 
@@ -153,11 +158,12 @@ export const getByKey = async (verseKey: string): Promise<Verse | null> => {
  * Get verse by ID.
  */
 export const getById = async (id: number): Promise<Verse | null> => {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<VerseRow>(
+  const db = getDatabase();
+  const result = await db.executeAsync<VerseRow>(
     'SELECT * FROM verses WHERE id = ?',
-    id,
+    [id],
   );
+  const row = result.rows?._array[0];
   return row ? mapRowToVerse(row) : null;
 };
 
@@ -165,11 +171,12 @@ export const getById = async (id: number): Promise<Verse | null> => {
  * Get all verses for a surah.
  */
 export const getBySurah = async (surahId: number): Promise<Verse[]> => {
-  const db = await getDatabase();
-  const rows = await db.getAllAsync<VerseRow>(
+  const db = getDatabase();
+  const result = await db.executeAsync<VerseRow>(
     'SELECT * FROM verses WHERE surah_id = ? ORDER BY number',
-    surahId,
+    [surahId],
   );
+  const rows = result.rows?._array ?? [];
   return rows.map(mapRowToVerse);
 };
 
@@ -177,11 +184,12 @@ export const getBySurah = async (surahId: number): Promise<Verse[]> => {
  * Get all verses for a juz.
  */
 export const getByJuz = async (juzId: number): Promise<Verse[]> => {
-  const db = await getDatabase();
-  const rows = await db.getAllAsync<VerseRow>(
+  const db = getDatabase();
+  const result = await db.executeAsync<VerseRow>(
     'SELECT * FROM verses WHERE juz_id = ? ORDER BY id',
-    juzId,
+    [juzId],
   );
+  const rows = result.rows?._array ?? [];
   return rows.map(mapRowToVerse);
 };
 
@@ -191,11 +199,12 @@ export const getByJuz = async (juzId: number): Promise<Verse[]> => {
 export const getTajweedMarks = async (
   verseId: number,
 ): Promise<TajweedMark[]> => {
-  const db = await getDatabase();
-  const rows = await db.getAllAsync<TajweedMarkRow>(
+  const db = getDatabase();
+  const result = await db.executeAsync<TajweedMarkRow>(
     'SELECT * FROM tajweed_marks WHERE verse_id = ?',
-    verseId,
+    [verseId],
   );
+  const rows = result.rows?._array ?? [];
   return rows.map((row) => ({
     class: row.class,
     start_baris: row.start_baris,
@@ -209,9 +218,9 @@ export const getTajweedMarks = async (
  * Get total verse count.
  */
 export const getCount = async (): Promise<number> => {
-  const db = await getDatabase();
-  const result = await db.getFirstAsync<{ count: number }>(
+  const db = getDatabase();
+  const result = await db.executeAsync<{ count: number }>(
     'SELECT COUNT(*) as count FROM verses',
   );
-  return result?.count ?? 0;
+  return result.rows?._array[0]?.count ?? 0;
 };
