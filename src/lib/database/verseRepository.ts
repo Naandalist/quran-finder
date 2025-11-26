@@ -53,6 +53,19 @@ const mapRowToVerse = (row: VerseRow): Verse => ({
 });
 
 /**
+ * Escape special characters in FTS5 query.
+ * FTS5 uses special characters: " ' * - + ( ) : ^
+ * We escape them by wrapping the query in double quotes for phrase matching.
+ */
+const escapeFts5Query = (query: string): string => {
+  // Remove any existing quotes and escape special characters
+  // by treating the entire query as a phrase (wrap in double quotes)
+  // and escape any internal double quotes
+  const escaped = query.replace(/"/g, '""');
+  return `"${escaped}"`;
+};
+
+/**
  * Search verses by transliteration (lafaz mode).
  * Uses FTS5 for prefix matching.
  */
@@ -67,8 +80,9 @@ export const searchByTransliteration = async (
     return [];
   }
 
-  // Use FTS5 with prefix matching
-  const ftsQuery = `${normalizedQuery}*`;
+  // Use FTS5 with escaped query and prefix matching
+  const escapedQuery = escapeFts5Query(normalizedQuery);
+  const ftsQuery = `${escapedQuery}*`;
   const rows = await db.getAllAsync<VerseRow>(
     `SELECT v.* FROM verses v
      JOIN verses_fts fts ON v.id = fts.rowid
@@ -104,8 +118,9 @@ export const searchByMeaning = async (
     return [];
   }
 
-  // Use FTS5 with prefix matching across translation columns
-  const ftsQuery = `${query}*`;
+  // Use FTS5 with escaped query and prefix matching across translation columns
+  const escapedQuery = escapeFts5Query(query.trim());
+  const ftsQuery = `${escapedQuery}*`;
   const rows = await db.getAllAsync<VerseRow>(
     `SELECT v.* FROM verses v
      JOIN verses_fts fts ON v.id = fts.rowid
