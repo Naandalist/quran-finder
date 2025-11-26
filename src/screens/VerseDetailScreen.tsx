@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -8,7 +8,8 @@ import { AppBar } from 'components/layout/AppBar';
 import { IconButton } from 'components/common/IconButton';
 import { useTheme } from 'lib/theme/ThemeProvider';
 import { RootStackParamList } from 'app/navigation/types';
-import { getVerseByKey } from 'lib/quran/verses';
+import { verseRepository } from 'lib/database';
+import { Verse } from 'lib/types';
 
 import { VerseMetaHeader } from 'components/verses/VerseMetaHeader';
 
@@ -21,9 +22,42 @@ export default function VerseDetailScreen() {
   const { colors, spacing, typography } = useTheme();
 
   const { verseKey } = route.params;
-  const verse = getVerseByKey(verseKey);
+  const [verse, setVerse] = useState<Verse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [surahId] = verseKey.split(':').map(Number);
+
+  useEffect(() => {
+    const loadVerse = async () => {
+      try {
+        setIsLoading(true);
+        const loadedVerse = await verseRepository.getByKey(verseKey);
+        setVerse(loadedVerse);
+      } catch (err) {
+        console.error('Error loading verse:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadVerse();
+  }, [verseKey]);
+
+  if (isLoading) {
+    return (
+      <Screen>
+        <AppBar
+          title={`Ayat ${verseKey}`}
+          left={
+            <IconButton icon="←" onPress={() => navigation.goBack()} />
+          }
+        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      </Screen>
+    );
+  }
 
   if (!verse) {
     return (
@@ -145,5 +179,10 @@ const styles = StyleSheet.create({
   section: {},
   contextButton: {
     alignSelf: 'stretch',
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

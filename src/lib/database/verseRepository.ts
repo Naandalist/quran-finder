@@ -1,0 +1,202 @@
+/**
+ * Verse repository for data access layer.
+ * Provides methods to query verses from SQLite database.
+ */
+import { getDatabase } from './connection';
+import type { Verse, TajweedMark, SearchResult } from 'lib/types';
+import { normalizeLatin } from 'lib/quran/normalizeLatin';
+
+interface VerseRow {
+  id: number;
+  number: number;
+  text: string;
+  juz_id: number;
+  surah_id: number;
+  verse_key: string;
+  transliteration: string;
+  transliteration_normalized: string;
+  translation_id: string;
+  translation_en: string;
+  translation_my: string;
+  translation_de: string;
+  translation_tr: string;
+  translation_fr: string;
+}
+
+interface TajweedMarkRow {
+  id: number;
+  verse_id: number;
+  class: string;
+  start_baris: number;
+  end_baris: number;
+  start_pojok: number;
+  end_pojok: number;
+}
+
+/**
+ * Map database row to Verse type.
+ */
+const mapRowToVerse = (row: VerseRow): Verse => ({
+  id: row.id,
+  number: row.number,
+  text: row.text,
+  juz_id: row.juz_id,
+  surah_id: row.surah_id,
+  verse_key: row.verse_key,
+  transliteration: row.transliteration,
+  translation_id: row.translation_id,
+  translation_en: row.translation_en,
+  translation_my: row.translation_my,
+  translation_de: row.translation_de,
+  translation_tr: row.translation_tr,
+  translation_fr: row.translation_fr,
+});
+
+/**
+ * Search verses by transliteration (lafaz mode).
+ * Uses FTS5 for prefix matching.
+ */
+export const searchByTransliteration = async (
+  query: string,
+  limit: number = 100,
+): Promise<SearchResult[]> => {
+  const db = await getDatabase();
+  const normalizedQuery = normalizeLatin(query);
+
+  if (!normalizedQuery) {
+    return [];
+  }
+
+  // Use FTS5 with prefix matching
+  const ftsQuery = `${normalizedQuery}*`;
+  const rows = await db.getAllAsync<VerseRow>(
+    `SELECT v.* FROM verses v
+     JOIN verses_fts fts ON v.id = fts.rowid
+     WHERE verses_fts MATCH ?
+     ORDER BY rank
+     LIMIT ?`,
+    ftsQuery,
+    limit,
+  );
+
+  // Calculate score based on query match
+  return rows.map((row) => {
+    const normalizedTranslit = row.transliteration_normalized;
+    const score = normalizedQuery.length / normalizedTranslit.length;
+    return {
+      verse: mapRowToVerse(row),
+      score,
+    };
+  });
+};
+
+/**
+ * Search verses by meaning (makna mode).
+ * Uses FTS5 to search across translations.
+ */
+export const searchByMeaning = async (
+  query: string,
+  limit: number = 100,
+): Promise<SearchResult[]> => {
+  const db = await getDatabase();
+
+  if (!query.trim()) {
+    return [];
+  }
+
+  // Use FTS5 with prefix matching across translation columns
+  const ftsQuery = `${query}*`;
+  const rows = await db.getAllAsync<VerseRow>(
+    `SELECT v.* FROM verses v
+     JOIN verses_fts fts ON v.id = fts.rowid
+     WHERE verses_fts MATCH ?
+     ORDER BY rank
+     LIMIT ?`,
+    ftsQuery,
+    limit,
+  );
+
+  return rows.map((row) => ({
+    verse: mapRowToVerse(row),
+    score: 1, // FTS already ranks results
+  }));
+};
+
+/**
+ * Get verse by verse key (e.g., "1:1").
+ */
+export const getByKey = async (verseKey: string): Promise<Verse | null> => {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<VerseRow>(
+    'SELECT * FROM verses WHERE verse_key = ?',
+    verseKey,
+  );
+  return row ? mapRowToVerse(row) : null;
+};
+
+/**
+ * Get verse by ID.
+ */
+export const getById = async (id: number): Promise<Verse | null> => {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<VerseRow>(
+    'SELECT * FROM verses WHERE id = ?',
+    id,
+  );
+  return row ? mapRowToVerse(row) : null;
+};
+
+/**
+ * Get all verses for a surah.
+ */
+export const getBySurah = async (surahId: number): Promise<Verse[]> => {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync<VerseRow>(
+    'SELECT * FROM verses WHERE surah_id = ? ORDER BY number',
+    surahId,
+  );
+  return rows.map(mapRowToVerse);
+};
+
+/**
+ * Get all verses for a juz.
+ */
+export const getByJuz = async (juzId: number): Promise<Verse[]> => {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync<VerseRow>(
+    'SELECT * FROM verses WHERE juz_id = ? ORDER BY id',
+    juzId,
+  );
+  return rows.map(mapRowToVerse);
+};
+
+/**
+ * Get tajweed marks for a verse.
+ */
+export const getTajweedMarks = async (
+  verseId: number,
+): Promise<TajweedMark[]> => {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync<TajweedMarkRow>(
+    'SELECT * FROM tajweed_marks WHERE verse_id = ?',
+    verseId,
+  );
+  return rows.map((row) => ({
+    class: row.class,
+    start_baris: row.start_baris,
+    end_baris: row.end_baris,
+    start_pojok: row.start_pojok,
+    end_pojok: row.end_pojok,
+  }));
+};
+
+/**
+ * Get total verse count.
+ */
+export const getCount = async (): Promise<number> => {
+  const db = await getDatabase();
+  const result = await db.getFirstAsync<{ count: number }>(
+    'SELECT COUNT(*) as count FROM verses',
+  );
+  return result?.count ?? 0;
+};

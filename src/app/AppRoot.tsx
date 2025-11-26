@@ -4,12 +4,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider } from 'lib/theme/ThemeProvider';
 import { RootNavigator } from 'app/navigation/RootNavigator';
 import { colors } from 'lib/theme/colors';
+import { DatabaseProvider } from 'app/DatabaseProvider';
 
 const AppRoot: React.FC = () => {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <NavigationContainer
+        <DatabaseProvider>
+          <NavigationContainer
           theme={{
             dark: false,
             colors: {
@@ -41,6 +43,7 @@ const AppRoot: React.FC = () => {
           }}>
           <RootNavigator />
         </NavigationContainer>
+        </DatabaseProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );

@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -8,7 +8,7 @@ import { AppBar } from 'components/layout/AppBar';
 import { IconButton } from 'components/common/IconButton';
 import { useTheme } from 'lib/theme/ThemeProvider';
 import { RootStackParamList } from 'app/navigation/types';
-import { getVersesBySurah } from 'lib/quran/verses';
+import { verseRepository } from 'lib/database';
 import { Verse } from 'lib/types';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'SurahContext'>;
@@ -20,7 +20,24 @@ export default function SurahContextScreen() {
   const { colors, spacing, typography } = useTheme();
 
   const { surahId, verseNumber } = route.params;
-  const verses = getVersesBySurah(surahId);
+  const [verses, setVerses] = useState<Verse[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadVerses = async () => {
+      try {
+        setIsLoading(true);
+        const loadedVerses = await verseRepository.getBySurah(surahId);
+        setVerses(loadedVerses);
+      } catch (err) {
+        console.error('Error loading verses:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadVerses();
+  }, [surahId]);
 
   const renderVerse = ({ item }: { item: Verse }) => {
     const [, ayahNum] = item.verse_key.split(':');
@@ -69,6 +86,22 @@ export default function SurahContextScreen() {
       </View>
     );
   };
+
+  if (isLoading) {
+    return (
+      <Screen>
+        <AppBar
+          title={`Surah ${surahId}`}
+          left={
+            <IconButton icon="←" onPress={() => navigation.goBack()} />
+          }
+        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen>
@@ -120,5 +153,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 100,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
