@@ -4,7 +4,7 @@
  */
 import { getDatabase } from './connection';
 import type { Verse, SearchResult } from 'lib/types';
-import { normalizeLatin } from 'lib/quran/normalizeLatin';
+import { normalizeLatin, stripVowels } from 'lib/quran/normalizeLatin';
 
 /**
  * Database row structure matching our schema.
@@ -17,7 +17,15 @@ interface VerseRow {
   text: string;
   transliteration: string;
   transliteration_normalized: string;
+  transliteration_skeleton: string;
   translation_id: string | null;
+}
+
+/**
+ * Extended row with computed score for search results.
+ */
+interface VerseRowWithScore extends VerseRow {
+  score: number;
 }
 
 /**
@@ -36,37 +44,54 @@ const mapRowToVerse = (row: VerseRow): Verse => ({
 
 /**
  * Search verses by transliteration (lafaz mode).
- * Uses SQL LIKE on the pre-normalized transliteration column for fast searching.
+ * Uses Indonesian-friendly phonetic normalization with two-tier matching:
+ * 1. Exact normalized match (score: 2) - handles q→k, diacritics, double vowels
+ * 2. Skeleton match (score: 1) - strips vowels for fuzzy matching
+ *
+ * Examples:
+ * - "yaayyuhalkafirun" → finds 109:1 (exact normalized)
+ * - "kaafrun" → finds 109:1 (skeleton match)
+ * - "kulyaayuhalkafirun" → finds 109:1 (q→k + skeleton)
  */
 export const searchByTransliteration = async (
   query: string,
-  limit: number = 100,
+  limit: number = 50,
 ): Promise<SearchResult[]> => {
   const db = getDatabase();
-  const normalizedQuery = normalizeLatin(query);
+  const qNorm = normalizeLatin(query);
+  const qSkel = stripVowels(qNorm);
 
-  if (!normalizedQuery) {
+  if (!qNorm) {
     return [];
   }
 
-  // Use LIKE on the normalized column - fast with index
+  // Two-tier search: normalized match (score 2) or skeleton match (score 1)
+  // SQLite doesn't allow alias in WHERE, so we duplicate the CASE conditions
   const result = db.execute(
-    `SELECT * FROM verses 
-     WHERE transliteration_normalized LIKE ? 
-     ORDER BY id 
-     LIMIT ?`,
-    [`%${normalizedQuery}%`, limit],
+    `SELECT
+      id, number, surah_id, juz_id,
+      text, transliteration, translation_id,
+      transliteration_normalized,
+      transliteration_skeleton,
+      CASE
+        WHEN transliteration_normalized LIKE '%' || ? || '%' THEN 2
+        WHEN transliteration_skeleton LIKE '%' || ? || '%' THEN 1
+        ELSE 0
+      END AS score
+    FROM verses
+    WHERE transliteration_normalized LIKE '%' || ? || '%'
+       OR transliteration_skeleton LIKE '%' || ? || '%'
+    ORDER BY score DESC, id ASC
+    LIMIT ?`,
+    [qNorm, qSkel, qNorm, qSkel, limit],
   );
 
-  const rows = (result.rows?._array ?? []) as unknown as VerseRow[];
+  const rows = (result.rows?._array ?? []) as unknown as VerseRowWithScore[];
 
-  return rows.map((row) => {
-    const score = normalizedQuery.length / row.transliteration_normalized.length;
-    return {
-      verse: mapRowToVerse(row),
-      score,
-    };
-  });
+  return rows.map((row) => ({
+    verse: mapRowToVerse(row),
+    score: row.score,
+  }));
 };
 
 /**

@@ -14,6 +14,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Database from 'better-sqlite3';
 
+// Import shared normalization functions
+import { normalizeLatin, stripVowels } from '../src/lib/quran/normalizeLatin.mjs';
+
 // Get the project root directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,19 +26,6 @@ const projectRoot = path.resolve(__dirname, '..');
 const jsonPath = path.join(projectRoot, 'src', 'lib', 'quran', 'verses.json');
 const assetsDir = path.join(projectRoot, 'android', 'app', 'src', 'main', 'assets');
 const outPath = path.join(assetsDir, 'quran.sqlite');
-
-/**
- * Normalize Latin text for phonetic search.
- * Same logic as src/lib/quran/normalizeLatin.ts
- */
-const normalizeLatin = (text) => {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
-    .replace(/[^\w]/g, '')           // Remove non-word chars
-    .replace(/_/g, '');              // Remove underscores
-};
 
 console.log('🕌 Quran Database Builder');
 console.log('='.repeat(40));
@@ -77,7 +67,7 @@ const db = new Database(outPath);
 db.pragma('journal_mode = WAL');
 db.pragma('synchronous = OFF');
 
-// Create the verses table with normalized transliteration column
+// Create the verses table with normalized transliteration columns
 console.log('\n📋 Creating verses table...');
 db.exec(`
   CREATE TABLE verses (
@@ -88,14 +78,15 @@ db.exec(`
     text                        TEXT NOT NULL,
     transliteration             TEXT NOT NULL,
     transliteration_normalized  TEXT NOT NULL,
+    transliteration_skeleton    TEXT NOT NULL,
     translation_id              TEXT
   );
 `);
 
 // Prepare insert statement
 const insert = db.prepare(`
-  INSERT INTO verses (id, number, surah_id, juz_id, text, transliteration, transliteration_normalized, translation_id)
-  VALUES (@id, @number, @surah_id, @juz_id, @text, @transliteration, @transliteration_normalized, @translation_id)
+  INSERT INTO verses (id, number, surah_id, juz_id, text, transliteration, transliteration_normalized, transliteration_skeleton, translation_id)
+  VALUES (@id, @number, @surah_id, @juz_id, @text, @transliteration, @transliteration_normalized, @transliteration_skeleton, @translation_id)
 `);
 
 // Use a transaction for bulk insert (much faster)
@@ -105,6 +96,9 @@ const startTime = Date.now();
 const insertAll = db.transaction((versesData) => {
   let inserted = 0;
   for (const v of versesData) {
+    const normalized = normalizeLatin(v.transliteration);
+    const skeleton = stripVowels(normalized);
+
     insert.run({
       id: v.id,
       number: v.number ?? null,
@@ -112,7 +106,8 @@ const insertAll = db.transaction((versesData) => {
       juz_id: v.juz_id ?? null,
       text: v.text,
       transliteration: v.transliteration,
-      transliteration_normalized: normalizeLatin(v.transliteration),
+      transliteration_normalized: normalized,
+      transliteration_skeleton: skeleton,
       translation_id: v.translation_id ?? null,
     });
     inserted++;
@@ -143,6 +138,12 @@ console.log('   - Creating index on transliteration_normalized...');
 db.exec(`
   CREATE INDEX idx_verses_transliteration_normalized
     ON verses(transliteration_normalized);
+`);
+
+console.log('   - Creating index on transliteration_skeleton...');
+db.exec(`
+  CREATE INDEX idx_verses_transliteration_skeleton
+    ON verses(transliteration_skeleton);
 `);
 
 // Switch back to normal mode and close
