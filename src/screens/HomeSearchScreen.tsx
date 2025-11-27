@@ -75,7 +75,7 @@ export default function HomeSearchScreen() {
 
         {/* Hint Text */}
         <Text style={[typography.bodySmall, { color: colors.textMuted }]}>
-          Contoh: yaayuhalkafirun, alhamdulillah
+          Contoh: yaayyuhalkafirun, alhamdulillah
         </Text>
 
         {/* Example Chips Section */}

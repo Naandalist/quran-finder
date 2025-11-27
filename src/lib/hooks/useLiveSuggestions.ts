@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { SearchResult, QueryMode, SEARCH_DEBOUNCE_MS } from 'lib/types';
-import { searchPhonetic } from 'lib/quran/phoneticSearch';
+import { verseRepository } from 'lib/database';
 
 interface LiveSuggestionsState {
   suggestions: SearchResult[];
@@ -31,15 +31,19 @@ export const useLiveSuggestions = (
     setIsLoading(true);
 
     // Debounce the search
-    debounceRef.current = setTimeout(() => {
-      if (mode === 'lafaz') {
-        const results = searchPhonetic(query);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const results =
+          mode === 'lafaz'
+            ? await verseRepository.searchByTransliteration(query, 20)
+            : await verseRepository.searchByMeaning(query, 20);
         setSuggestions(results);
-      } else {
-        // TODO: Implement semantic search
+      } catch (error) {
+        console.error('Search error:', error);
         setSuggestions([]);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }, SEARCH_DEBOUNCE_MS);
 
     return () => {

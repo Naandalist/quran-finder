@@ -9,7 +9,7 @@ export {
   closeDatabase,
 } from './connection';
 
-export { seedDatabase, rebuildFtsIndex, type ProgressCallback } from './seeder';
+export { DATABASE_NAME, DATABASE_VERSION } from './assets';
 
 import * as verseRepositoryModule from './verseRepository';
 export const verseRepository = verseRepositoryModule;

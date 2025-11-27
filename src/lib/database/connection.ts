@@ -1,67 +1,48 @@
 /**
  * SQLite database connection manager.
- * Provides singleton database connection with WAL mode for better performance.
+ * Uses pre-bundled quran.sqlite copied from assets.
  */
 import { open, type NitroSQLiteConnection } from 'react-native-nitro-sqlite';
-import {
-  VERSES_TABLE,
-  TAJWEED_MARKS_TABLE,
-  INDEXES,
-  FTS_TABLE,
-  FTS_TRIGGERS,
-} from './schema';
-
-const DATABASE_NAME = 'quran_verses.db';
+import { DATABASE_NAME, ensureDatabaseExists } from './assets';
 
 let database: NitroSQLiteConnection | null = null;
 
 /**
  * Get singleton database connection.
- * Opens database with WAL mode for better concurrent performance.
+ * Opens the database with WAL mode for better read performance.
+ * Note: ensureDatabaseExists() must be called before this.
  */
 export const getDatabase = (): NitroSQLiteConnection => {
   if (!database) {
     database = open({ name: DATABASE_NAME });
-    // Enable WAL mode for better performance
+    // Enable WAL mode for better read performance
     database.execute('PRAGMA journal_mode = WAL;');
   }
   return database;
 };
 
 /**
- * Initialize database schema.
- * Creates tables, indexes, FTS virtual table, and triggers.
+ * Initialize database - copies from assets if needed, then opens connection.
  */
 export const initializeDatabase = async (): Promise<void> => {
-  const db = getDatabase();
-
-  // Create main tables
-  await db.executeAsync(VERSES_TABLE);
-  await db.executeAsync(TAJWEED_MARKS_TABLE);
-
-  // Create indexes
-  for (const index of INDEXES) {
-    await db.executeAsync(index);
-  }
-
-  // Create FTS5 virtual table
-  await db.executeAsync(FTS_TABLE);
-
-  // Create triggers for FTS sync
-  for (const trigger of FTS_TRIGGERS) {
-    await db.executeAsync(trigger);
-  }
+  // First, ensure database is copied from assets to files directory
+  await ensureDatabaseExists();
+  // Then open the connection
+  getDatabase();
 };
 
 /**
- * Check if database is populated with verse data.
+ * Check if database has verse data.
  */
 export const isDatabasePopulated = async (): Promise<boolean> => {
-  const db = getDatabase();
-  const result = await db.executeAsync<{ count: number }>(
-    'SELECT COUNT(*) as count FROM verses',
-  );
-  return (result.rows?._array[0]?.count ?? 0) > 0;
+  try {
+    const db = getDatabase();
+    const result = db.execute('SELECT COUNT(*) as count FROM verses');
+    const count = Number(result.rows?._array[0]?.count ?? 0);
+    return count > 0;
+  } catch {
+    return false;
+  }
 };
 
 /**
@@ -69,15 +50,12 @@ export const isDatabasePopulated = async (): Promise<boolean> => {
  */
 export const getVerseCount = async (): Promise<number> => {
   const db = getDatabase();
-  const result = await db.executeAsync<{ count: number }>(
-    'SELECT COUNT(*) as count FROM verses',
-  );
-  return result.rows?._array[0]?.count ?? 0;
+  const result = db.execute('SELECT COUNT(*) as count FROM verses');
+  return Number(result.rows?._array[0]?.count ?? 0);
 };
 
 /**
  * Close database connection.
- * Should be called when app is shutting down.
  */
 export const closeDatabase = (): void => {
   if (database) {

@@ -1,38 +1,23 @@
 /**
  * Verse repository for data access layer.
- * Provides methods to query verses from SQLite database.
+ * Provides methods to query verses from pre-bundled SQLite database.
  */
 import { getDatabase } from './connection';
-import type { Verse, TajweedMark, SearchResult } from 'lib/types';
+import type { Verse, SearchResult } from 'lib/types';
 import { normalizeLatin } from 'lib/quran/normalizeLatin';
 
+/**
+ * Database row structure matching our schema.
+ */
 interface VerseRow {
-  [key: string]: string | number | undefined;
   id: number;
   number: number;
-  text: string;
-  juz_id: number;
   surah_id: number;
-  verse_key: string;
+  juz_id: number | null;
+  text: string;
   transliteration: string;
   transliteration_normalized: string;
-  translation_id: string;
-  translation_en: string;
-  translation_my: string;
-  translation_de: string;
-  translation_tr: string;
-  translation_fr: string;
-}
-
-interface TajweedMarkRow {
-  [key: string]: string | number | undefined;
-  id: number;
-  verse_id: number;
-  class: string;
-  start_baris: number;
-  end_baris: number;
-  start_pojok: number;
-  end_pojok: number;
+  translation_id: string | null;
 }
 
 /**
@@ -42,34 +27,16 @@ const mapRowToVerse = (row: VerseRow): Verse => ({
   id: row.id,
   number: row.number,
   text: row.text,
-  juz_id: row.juz_id,
+  juz_id: row.juz_id ?? 0,
   surah_id: row.surah_id,
-  verse_key: row.verse_key,
+  verse_key: `${row.surah_id}:${row.number}`,
   transliteration: row.transliteration,
-  translation_id: row.translation_id,
-  translation_en: row.translation_en,
-  translation_my: row.translation_my,
-  translation_de: row.translation_de,
-  translation_tr: row.translation_tr,
-  translation_fr: row.translation_fr,
+  translation_id: row.translation_id ?? '',
 });
 
 /**
- * Escape special characters in FTS5 query.
- * FTS5 uses special characters: " ' * - + ( ) : ^
- * We escape them by wrapping the query in double quotes for phrase matching.
- */
-const escapeFts5Query = (query: string): string => {
-  // Remove any existing quotes and escape special characters
-  // by treating the entire query as a phrase (wrap in double quotes)
-  // and escape any internal double quotes
-  const escaped = query.replace(/"/g, '""');
-  return `"${escaped}"`;
-};
-
-/**
  * Search verses by transliteration (lafaz mode).
- * Uses FTS5 for prefix matching.
+ * Uses SQL LIKE on the pre-normalized transliteration column for fast searching.
  */
 export const searchByTransliteration = async (
   query: string,
@@ -82,24 +49,19 @@ export const searchByTransliteration = async (
     return [];
   }
 
-  // Use FTS5 with escaped query and prefix matching
-  const escapedQuery = escapeFts5Query(normalizedQuery);
-  const ftsQuery = `${escapedQuery}*`;
-  const result = await db.executeAsync<VerseRow>(
-    `SELECT v.* FROM verses v
-     JOIN verses_fts fts ON v.id = fts.rowid
-     WHERE verses_fts MATCH ?
-     ORDER BY rank
+  // Use LIKE on the normalized column - fast with index
+  const result = db.execute(
+    `SELECT * FROM verses 
+     WHERE transliteration_normalized LIKE ? 
+     ORDER BY id 
      LIMIT ?`,
-    [ftsQuery, limit],
+    [`%${normalizedQuery}%`, limit],
   );
 
-  const rows = result.rows?._array ?? [];
+  const rows = (result.rows?._array ?? []) as unknown as VerseRow[];
 
-  // Calculate score based on query match
   return rows.map((row) => {
-    const normalizedTranslit = row.transliteration_normalized;
-    const score = normalizedQuery.length / normalizedTranslit.length;
+    const score = normalizedQuery.length / row.transliteration_normalized.length;
     return {
       verse: mapRowToVerse(row),
       score,
@@ -109,7 +71,7 @@ export const searchByTransliteration = async (
 
 /**
  * Search verses by meaning (makna mode).
- * Uses FTS5 to search across translations.
+ * Searches in Indonesian translation.
  */
 export const searchByMeaning = async (
   query: string,
@@ -121,23 +83,19 @@ export const searchByMeaning = async (
     return [];
   }
 
-  // Use FTS5 with escaped query and prefix matching across translation columns
-  const escapedQuery = escapeFts5Query(query.trim());
-  const ftsQuery = `${escapedQuery}*`;
-  const result = await db.executeAsync<VerseRow>(
-    `SELECT v.* FROM verses v
-     JOIN verses_fts fts ON v.id = fts.rowid
-     WHERE verses_fts MATCH ?
-     ORDER BY rank
+  const result = db.execute(
+    `SELECT * FROM verses 
+     WHERE translation_id LIKE ? 
+     ORDER BY id 
      LIMIT ?`,
-    [ftsQuery, limit],
+    [`%${query.trim()}%`, limit],
   );
 
-  const rows = result.rows?._array ?? [];
+  const rows = (result.rows?._array ?? []) as unknown as VerseRow[];
 
   return rows.map((row) => ({
     verse: mapRowToVerse(row),
-    score: 1, // FTS already ranks results
+    score: 1,
   }));
 };
 
@@ -145,12 +103,13 @@ export const searchByMeaning = async (
  * Get verse by verse key (e.g., "1:1").
  */
 export const getByKey = async (verseKey: string): Promise<Verse | null> => {
+  const [surahId, number] = verseKey.split(':').map(Number);
   const db = getDatabase();
-  const result = await db.executeAsync<VerseRow>(
-    'SELECT * FROM verses WHERE verse_key = ?',
-    [verseKey],
+  const result = db.execute(
+    'SELECT * FROM verses WHERE surah_id = ? AND number = ?',
+    [surahId, number],
   );
-  const row = result.rows?._array[0];
+  const row = result.rows?._array[0] as unknown as VerseRow | undefined;
   return row ? mapRowToVerse(row) : null;
 };
 
@@ -159,11 +118,8 @@ export const getByKey = async (verseKey: string): Promise<Verse | null> => {
  */
 export const getById = async (id: number): Promise<Verse | null> => {
   const db = getDatabase();
-  const result = await db.executeAsync<VerseRow>(
-    'SELECT * FROM verses WHERE id = ?',
-    [id],
-  );
-  const row = result.rows?._array[0];
+  const result = db.execute('SELECT * FROM verses WHERE id = ?', [id]);
+  const row = result.rows?._array[0] as unknown as VerseRow | undefined;
   return row ? mapRowToVerse(row) : null;
 };
 
@@ -172,11 +128,11 @@ export const getById = async (id: number): Promise<Verse | null> => {
  */
 export const getBySurah = async (surahId: number): Promise<Verse[]> => {
   const db = getDatabase();
-  const result = await db.executeAsync<VerseRow>(
+  const result = db.execute(
     'SELECT * FROM verses WHERE surah_id = ? ORDER BY number',
     [surahId],
   );
-  const rows = result.rows?._array ?? [];
+  const rows = (result.rows?._array ?? []) as unknown as VerseRow[];
   return rows.map(mapRowToVerse);
 };
 
@@ -185,33 +141,12 @@ export const getBySurah = async (surahId: number): Promise<Verse[]> => {
  */
 export const getByJuz = async (juzId: number): Promise<Verse[]> => {
   const db = getDatabase();
-  const result = await db.executeAsync<VerseRow>(
+  const result = db.execute(
     'SELECT * FROM verses WHERE juz_id = ? ORDER BY id',
     [juzId],
   );
-  const rows = result.rows?._array ?? [];
+  const rows = (result.rows?._array ?? []) as unknown as VerseRow[];
   return rows.map(mapRowToVerse);
-};
-
-/**
- * Get tajweed marks for a verse.
- */
-export const getTajweedMarks = async (
-  verseId: number,
-): Promise<TajweedMark[]> => {
-  const db = getDatabase();
-  const result = await db.executeAsync<TajweedMarkRow>(
-    'SELECT * FROM tajweed_marks WHERE verse_id = ?',
-    [verseId],
-  );
-  const rows = result.rows?._array ?? [];
-  return rows.map((row) => ({
-    class: row.class,
-    start_baris: row.start_baris,
-    end_baris: row.end_baris,
-    start_pojok: row.start_pojok,
-    end_pojok: row.end_pojok,
-  }));
 };
 
 /**
@@ -219,8 +154,6 @@ export const getTajweedMarks = async (
  */
 export const getCount = async (): Promise<number> => {
   const db = getDatabase();
-  const result = await db.executeAsync<{ count: number }>(
-    'SELECT COUNT(*) as count FROM verses',
-  );
-  return result.rows?._array[0]?.count ?? 0;
+  const result = db.execute('SELECT COUNT(*) as count FROM verses');
+  return (result.rows?._array[0] as { count: number })?.count ?? 0;
 };

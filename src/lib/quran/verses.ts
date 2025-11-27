@@ -1,33 +1,34 @@
-import { Verse, VerseRaw } from 'lib/types';
-import versesData from './verses.json';
+/**
+ * Verse data access functions.
+ * All data is now retrieved from the pre-bundled SQLite database.
+ */
+import { Verse } from 'lib/types';
+import { verseRepository } from 'lib/database';
 
-// Transform raw verses to include computed verse_key
-const transformVerses = (raw: VerseRaw[]): Verse[] => {
-  return raw.map(v => ({
-    ...v,
-    verse_key: `${v.surah_id}:${v.number}`,
-  }));
+/**
+ * Get verse by key (e.g., "1:1").
+ */
+export const getVerseByKey = async (verseKey: string): Promise<Verse | null> => {
+  return verseRepository.getByKey(verseKey);
 };
 
-let cachedVerses: Verse[] | null = null;
-
-export const loadVerses = (): Verse[] => {
-  if (!cachedVerses) {
-    cachedVerses = transformVerses(versesData as VerseRaw[]);
-  }
-  return cachedVerses;
+/**
+ * Get all verses for a surah.
+ */
+export const getVersesBySurah = async (surahId: number): Promise<Verse[]> => {
+  return verseRepository.getBySurah(surahId);
 };
 
-export const getVerseByKey = (verseKey: string): Verse | undefined => {
-  return loadVerses().find(v => v.verse_key === verseKey);
+/**
+ * Get verse by ID.
+ */
+export const getVerseById = async (id: number): Promise<Verse | null> => {
+  return verseRepository.getById(id);
 };
 
-export const getVersesBySurah = (surahId: number): Verse[] => {
-  return loadVerses().filter(v => v.surah_id === surahId);
+/**
+ * Get total verse count.
+ */
+export const getVerseCount = async (): Promise<number> => {
+  return verseRepository.getCount();
 };
-
-export const getVerseById = (id: number): Verse | undefined => {
-  return loadVerses().find(v => v.id === id);
-};
-
-export const getAllVerses = loadVerses;

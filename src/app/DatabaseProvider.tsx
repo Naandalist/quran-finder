@@ -1,6 +1,6 @@
 /**
  * Database provider component.
- * Initializes SQLite database and seeds data on app start.
+ * Initializes the pre-bundled SQLite database on app start.
  */
 import React, {
   createContext,
@@ -10,15 +10,8 @@ import React, {
   ReactNode,
 } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import {
-  initializeDatabase,
-  isDatabasePopulated,
-  seedDatabase,
-  type ProgressCallback,
-} from 'lib/database';
+import { initializeDatabase, isDatabasePopulated } from 'lib/database';
 import { useTheme } from 'lib/theme/ThemeProvider';
-import versesData from 'lib/quran/verses.json';
-import type { VerseRaw } from 'lib/types';
 
 interface DatabaseContextValue {
   isReady: boolean;
@@ -38,24 +31,17 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({
   const { colors, spacing, typography } = useTheme();
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [progress, setProgress] = useState({ current: 0, total: 0 });
 
   useEffect(() => {
     const initDb = async () => {
       try {
-        // Initialize schema
+        // Initialize database connection
         await initializeDatabase();
 
-        // Check if seeding is needed
+        // Verify database has data
         const populated = await isDatabasePopulated();
-
         if (!populated) {
-          const onProgress: ProgressCallback = (current, total) => {
-            setProgress({ current, total });
-          };
-
-          // Seed database from JSON
-          await seedDatabase(versesData as VerseRaw[], onProgress);
+          throw new Error('Database is empty. Please rebuild with: pnpm build:quran-db');
         }
 
         setIsReady(true);
@@ -92,11 +78,6 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({
   }
 
   if (!isReady) {
-    const progressPercent =
-      progress.total > 0
-        ? Math.round((progress.current / progress.total) * 100)
-        : 0;
-
     return (
       <View
         style={[
@@ -109,19 +90,8 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({
             typography.body,
             { color: colors.text, marginTop: spacing.md },
           ]}>
-          {progress.total > 0
-            ? `Memuat data ayat... ${progressPercent}%`
-            : 'Menginisialisasi database...'}
+          Memuat database...
         </Text>
-        {progress.total > 0 && (
-          <Text
-            style={[
-              typography.caption,
-              { color: colors.textMuted, marginTop: spacing.sm },
-            ]}>
-            {progress.current} / {progress.total} ayat
-          </Text>
-        )}
       </View>
     );
   }

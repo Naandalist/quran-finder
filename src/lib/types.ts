@@ -14,12 +14,6 @@ export interface VerseRaw {
   surah_id: number;
   transliteration: string;
   translation_id: string;
-  translation_en: string;
-  translation_my: string;
-  translation_de: string;
-  translation_tr: string;
-  translation_fr: string;
-  tajweed?: TajweedMark[];
 }
 
 export interface Verse extends VerseRaw {
@@ -38,10 +32,10 @@ export const APP_NAME = 'Cari Ayat';
 export const EXAMPLE_QUERIES = [
   'bismillah',
   'alhamdulillah',
-  'qulhuallah',
-  'inna lillahi',
-  'ayat kursi',
-  'al fatihah',
+  'qulhuwallah',
+  'innalillahi',
+  'allahulailaha',
+  'yaayyuhalkafirun',
 ];
 
 export const SEARCH_DEBOUNCE_MS = 300;
