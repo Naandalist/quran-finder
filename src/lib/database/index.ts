@@ -11,4 +11,5 @@ export {
 
 export { seedDatabase, rebuildFtsIndex, type ProgressCallback } from './seeder';
 
-export * as verseRepository from './verseRepository';
+import * as verseRepositoryModule from './verseRepository';
+export const verseRepository = verseRepositoryModule;
