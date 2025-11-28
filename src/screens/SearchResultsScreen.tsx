@@ -125,6 +125,7 @@ export default function SearchResultsScreen() {
             verse={item.verse}
             onPress={() => handleVersePress(item.verse)}
             highlightText={query}
+            score={mode === 'lafaz' ? item.score : undefined}
           />
         )}
         contentContainerStyle={[

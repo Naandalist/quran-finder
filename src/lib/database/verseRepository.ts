@@ -5,6 +5,7 @@
 import { getDatabase } from './connection';
 import type { Verse, SearchResult } from 'lib/types';
 import { normalizeLatin, stripVowels } from 'lib/quran/normalizeLatin';
+import { fuzzyScoreForVerse } from 'lib/quran/fuzzyScore';
 
 /**
  * Database row structure matching our schema.
@@ -19,13 +20,6 @@ interface VerseRow {
   transliteration_normalized: string;
   transliteration_skeleton: string;
   translation_id: string | null;
-}
-
-/**
- * Extended row with computed score for search results.
- */
-interface VerseRowWithScore extends VerseRow {
-  score: number;
 }
 
 /**
@@ -44,9 +38,11 @@ const mapRowToVerse = (row: VerseRow): Verse => ({
 
 /**
  * Search verses by transliteration (lafaz mode).
- * Uses Indonesian-friendly phonetic normalization with two-tier matching:
- * 1. Exact normalized match (score: 2) - handles q→k, diacritics, double vowels
- * 2. Skeleton match (score: 1) - strips vowels for fuzzy matching
+ * Uses Indonesian-friendly phonetic normalization with fuzzy scoring:
+ * 1. Exact/substring match on normalized transliteration (high weight)
+ * 2. Skeleton match for vowel-tolerant matching (medium weight)
+ * 3. Levenshtein similarity for typo tolerance (low-medium weight)
+ * 4. Length ratio adjustment (bonus/penalty)
  *
  * Examples:
  * - "yaayyuhalkafirun" → finds 109:1 (exact normalized)
@@ -59,39 +55,50 @@ export const searchByTransliteration = async (
 ): Promise<SearchResult[]> => {
   const db = getDatabase();
   const qNorm = normalizeLatin(query);
-  const qSkel = stripVowels(qNorm);
 
-  if (!qNorm) {
+  // Require at least 2 characters for meaningful search
+  if (!qNorm || qNorm.length < 2) {
     return [];
   }
 
-  // Two-tier search: normalized match (score 2) or skeleton match (score 1)
-  // SQLite doesn't allow alias in WHERE, so we duplicate the CASE conditions
+  const qSkel = stripVowels(qNorm);
+
+  // Fetch candidate verses using SQLite LIKE on both normalized and skeleton
+  // Limit to 200 candidates to keep JS scoring fast
   const result = db.execute(
     `SELECT
       id, number, surah_id, juz_id,
       text, transliteration, translation_id,
       transliteration_normalized,
-      transliteration_skeleton,
-      CASE
-        WHEN transliteration_normalized LIKE '%' || ? || '%' THEN 2
-        WHEN transliteration_skeleton LIKE '%' || ? || '%' THEN 1
-        ELSE 0
-      END AS score
+      transliteration_skeleton
     FROM verses
     WHERE transliteration_normalized LIKE '%' || ? || '%'
        OR transliteration_skeleton LIKE '%' || ? || '%'
-    ORDER BY score DESC, id ASC
-    LIMIT ?`,
-    [qNorm, qSkel, qNorm, qSkel, limit],
+    LIMIT 200`,
+    [qNorm, qSkel],
   );
 
-  const rows = (result.rows?._array ?? []) as unknown as VerseRowWithScore[];
+  const rows = (result.rows?._array ?? []) as unknown as VerseRow[];
 
-  return rows.map((row) => ({
-    verse: mapRowToVerse(row),
-    score: row.score,
-  }));
+  // Apply fuzzy scoring to each candidate
+  const scored = rows.map((row) => {
+    const verseNorm = row.transliteration_normalized;
+    const verseSkel = row.transliteration_skeleton;
+
+    const score = fuzzyScoreForVerse(verseNorm, verseSkel, qNorm, qSkel);
+
+    return {
+      verse: mapRowToVerse(row),
+      score,
+    };
+  });
+
+  // Filter out zero/negative scores and sort by score descending
+  const filtered = scored.filter((r) => r.score > 0);
+  filtered.sort((a, b) => b.score - a.score);
+
+  // Return top results
+  return filtered.slice(0, limit);
 };
 
 /**
