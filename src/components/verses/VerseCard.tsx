@@ -8,6 +8,7 @@ interface VerseCardProps {
   verse: Verse;
   onPress: () => void;
   highlightText?: string;
+  highlightMode?: 'lafaz' | 'terjemahan';
   score?: number;
 }
 
@@ -15,6 +16,7 @@ export const VerseCard: React.FC<VerseCardProps> = ({
   verse,
   onPress,
   highlightText,
+  highlightMode = 'lafaz',
   score,
 }) => {
   const { colors, spacing, typography } = useTheme();
@@ -88,7 +90,7 @@ export const VerseCard: React.FC<VerseCardProps> = ({
       {/* Transliteration */}
       <HighlightedText
         text={verse.transliteration}
-        query={highlightText}
+        query={highlightMode === 'lafaz' ? highlightText : undefined}
         highlightColor={colors.primary}
         style={[
           typography.body,
@@ -97,9 +99,12 @@ export const VerseCard: React.FC<VerseCardProps> = ({
       />
 
       {/* Translation */}
-      {/* <Text style={[typography.bodySmall, { color: colors.textMuted }]}>
-        {verse.translation_id}
-      </Text> */}
+      <HighlightedText
+        text={verse.translation_id}
+        query={highlightMode === 'terjemahan' ? highlightText : undefined}
+        highlightColor={colors.secondary}
+        style={[typography.bodySmall, { color: colors.textMuted }]}
+      />
     </TouchableOpacity>
   );
 };

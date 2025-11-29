@@ -6,12 +6,13 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Screen } from 'components/layout/Screen';
 import { AppBar } from 'components/layout/AppBar';
 import { IconButton } from 'components/common/IconButton';
+import { EmptyState } from 'components/common/EmptyState';
+import { VerseCard } from 'components/verses/VerseCard';
 import { useTheme } from 'lib/theme/ThemeProvider';
 import { RootStackParamList } from 'app/navigation/types';
 import { Verse, SearchResult } from 'lib/types';
-import { verseRepository } from 'lib/database';
-
-import { VerseCard } from 'components/verses/VerseCard';
+import { searchByLafazRanked } from 'lib/quran/searchByLafaz';
+import { searchByTranslationRanked } from 'lib/quran/searchByTranslation';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'SearchResults'>;
 type SearchResultsRouteProp = RouteProp<RootStackParamList, 'SearchResults'>;
@@ -27,15 +28,15 @@ export default function SearchResultsScreen() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchResults = async () => {
+    const fetchResults = () => {
       try {
         setIsLoading(true);
         setError(null);
 
         const searchResults =
           mode === 'lafaz'
-            ? await verseRepository.searchByTransliteration(query)
-            : await verseRepository.searchByMeaning(query);
+            ? searchByLafazRanked(query)
+            : searchByTranslationRanked(query);
 
         setResults(searchResults);
       } catch (err) {
@@ -51,6 +52,10 @@ export default function SearchResultsScreen() {
 
   const handleVersePress = (verse: Verse) => {
     navigation.navigate('VerseDetail', { verseKey: verse.verse_key });
+  };
+
+  const getModeLabel = () => {
+    return mode === 'lafaz' ? 'Lafaz (Latin)' : 'Terjemahan (ID)';
   };
 
   if (isLoading) {
@@ -88,12 +93,11 @@ export default function SearchResultsScreen() {
           }
         />
         <View style={styles.errorContainer}>
-          <Text style={[typography.h3, { color: colors.error }]}>
-            Error
-          </Text>
-          <Text style={[typography.body, { color: colors.textMuted, marginTop: spacing.sm }]}>
-            {error}
-          </Text>
+          <EmptyState
+            icon="⚠️"
+            title="Terjadi Kesalahan"
+            message={error}
+          />
         </View>
       </Screen>
     );
@@ -111,35 +115,35 @@ export default function SearchResultsScreen() {
         }
       />
 
-      <View style={[styles.resultsInfo, { paddingHorizontal: spacing.md }]}>
+      <View style={[styles.resultsInfo, { paddingHorizontal: spacing.md, paddingVertical: spacing.sm }]}>
         <Text style={[typography.bodySmall, { color: colors.textMuted }]}>
-          {results.length} hasil ditemukan • Mode: {mode === 'lafaz' ? 'Lafaz' : 'Makna'}
+          {results.length} hasil ditemukan • Mode: {getModeLabel()}
         </Text>
       </View>
 
       <FlatList
         data={results}
-        keyExtractor={(item) => item.verse.verse_key}
+        keyExtractor={(item) => String(item.verse.id)}
         renderItem={({ item }) => (
           <VerseCard
             verse={item.verse}
             onPress={() => handleVersePress(item.verse)}
             highlightText={query}
-            score={mode === 'lafaz' ? item.score : undefined}
+            highlightMode={mode}
+            score={item.score}
           />
         )}
         contentContainerStyle={[
           styles.listContent,
-          { padding: spacing.md, gap: spacing.md },
+          { paddingHorizontal: spacing.md, paddingBottom: spacing.lg, gap: spacing.sm },
         ]}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={[typography.h3, { color: colors.text }]}>
-              Tidak ada hasil
-            </Text>
-            <Text style={[typography.body, { color: colors.textMuted, marginTop: spacing.sm }]}>
-              Coba kata kunci lain atau ubah mode pencarian
-            </Text>
+            <EmptyState
+              icon="📖"
+              title="Tidak Ditemukan"
+              message={`Tidak ada ayat yang cocok dengan "${query}"`}
+            />
           </View>
         }
       />
@@ -149,7 +153,8 @@ export default function SearchResultsScreen() {
 
 const styles = StyleSheet.create({
   resultsInfo: {
-    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
   },
   listContent: {
     flexGrow: 1,
