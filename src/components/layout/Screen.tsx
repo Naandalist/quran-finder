@@ -19,14 +19,15 @@ export const Screen: React.FC<ScreenProps> = ({
   return (
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: colors.background }]}
-      edges={['top', 'left', 'right']}>
+    >
       <View
         style={[
           styles.container,
           { backgroundColor: colors.background },
-          !noPadding && { paddingHorizontal: spacing.md },
+          // !noPadding && { paddingHorizontal: spacing.md },
           style,
-        ]}>
+        ]}
+      >
         {children}
       </View>
     </SafeAreaView>
