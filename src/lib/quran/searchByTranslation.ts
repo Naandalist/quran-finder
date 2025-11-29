@@ -1,11 +1,13 @@
 /**
  * Ranked search for Quran verses by Indonesian translation (terjemahan).
  *
- * Uses SQLite FTS5 or LIKE to fetch candidate verses, then applies
- * scoring in TypeScript for ranking.
+ * Two-stage search:
+ * 1. Primary: keyword-based using SQL LIKE
+ * 2. Fallback: fuzzy token-level search using Levenshtein distance
  */
 
 import { getDatabase } from '../database/connection';
+import { levenshtein } from './levenshtein';
 import type { Verse, SearchResult } from '../types';
 
 /**
@@ -44,100 +46,186 @@ const mapRowToVerse = (row: VerseRow): Verse => ({
 });
 
 /**
- * Normalize Indonesian text for searching.
- * - Converts to lowercase
- * - Removes extra whitespace
+ * Calculate keyword-based score for translation matches.
+ *
+ * Scoring rules:
+ * - Each token match: +10
+ * - Full query substring match: +20
+ * - Length bonus (shorter translations score higher): 0-5
+ *
+ * @param translation - The verse's translation text (lowercase)
+ * @param query - The search query (lowercase)
+ * @param tokens - Query tokens (words >= 3 chars)
+ * @returns Score (higher is better)
  */
-function normalizeIndonesian(text: string): string {
-  return text.toLowerCase().trim().replace(/\s+/g, ' ');
+function calculateKeywordScore(
+  translation: string,
+  query: string,
+  tokens: string[],
+): number {
+  let score = 0;
+
+  // Token matches: +10 per token found
+  for (const token of tokens) {
+    if (translation.includes(token)) {
+      score += 10;
+    }
+  }
+
+  // Full query substring match: +20
+  if (translation.includes(query)) {
+    score += 20;
+  }
+
+  // Length bonus: shorter translations get slightly higher score
+  const len = translation.length;
+  const lenPenalty = Math.min(len / 200, 1); // 0..1
+  score += (1 - lenPenalty) * 5;
+
+  return score;
 }
 
 /**
- * Calculate a simple relevance score for translation matches.
+ * Calculate fuzzy score based on Levenshtein distance.
  *
- * Scoring factors:
- * - Exact phrase match: highest score
- * - All words present: medium score
- * - Partial word matches: lower score
- * - Word order matters
- *
- * @param translation - The verse's translation text
- * @param query - The search query
- * @returns Score between 0-100
+ * @param bestDist - Best (minimum) Levenshtein distance found
+ * @param translationLength - Length of translation text
+ * @returns Score (higher is better)
  */
-function calculateTranslationScore(translation: string, query: string): number {
-  const normTranslation = normalizeIndonesian(translation);
-  const normQuery = normalizeIndonesian(query);
-
-  if (!normQuery || !normTranslation) {
-    return 0;
-  }
-
+function calculateFuzzyScore(bestDist: number, translationLength: number): number {
   let score = 0;
 
-  // Exact phrase match bonus (highest priority)
-  if (normTranslation.includes(normQuery)) {
+  // Base score from distance
+  if (bestDist === 0) {
+    score += 80;
+  } else if (bestDist === 1) {
     score += 60;
+  }
 
-    // Additional bonus if it's at the start
-    if (normTranslation.startsWith(normQuery)) {
-      score += 20;
+  // Length bonus: shorter translations get slightly higher score
+  const lenPenalty = Math.min(translationLength / 200, 1);
+  score += (1 - lenPenalty) * 5;
+
+  return score;
+}
+
+/**
+ * Primary search: keyword-based using SQL LIKE.
+ *
+ * @param query - Normalized search query
+ * @returns Array of ranked results, or empty if no matches
+ */
+function primaryKeywordSearch(query: string): TranslationRankedResult[] {
+  const db = getDatabase();
+
+  // Query using LIKE on lowercase translation_id
+  const sql = `
+    SELECT id, number, surah_id, juz_id,
+           text, transliteration, translation_id
+    FROM verses
+    WHERE lower(translation_id) LIKE '%' || ? || '%'
+    LIMIT 300
+  `;
+
+  const result = db.execute(sql, [query]);
+  const rows = (result.rows?._array ?? []) as unknown as VerseRow[];
+
+  if (rows.length === 0) {
+    return [];
+  }
+
+  // Split query into tokens (words >= 3 chars)
+  const tokens = query.split(/\s+/).filter((t) => t.length >= 3);
+
+  // Score each row
+  const scored: TranslationRankedResult[] = [];
+
+  for (const row of rows) {
+    const translation = (row.translation_id ?? '').toLowerCase();
+    const score = calculateKeywordScore(translation, query, tokens);
+
+    if (score > 0) {
+      scored.push({
+        verse: mapRowToVerse(row),
+        score,
+      });
     }
+  }
 
-    // Bonus for shorter translations (more focused match)
-    const lengthRatio = normQuery.length / normTranslation.length;
-    score += lengthRatio * 20;
-  } else {
-    // Check for individual word matches
-    const queryWords = normQuery.split(/\s+/).filter((w) => w.length > 1);
-    const translationWords = normTranslation.split(/\s+/);
+  // Sort by score descending
+  scored.sort((a, b) => b.score - a.score);
 
-    if (queryWords.length === 0) {
-      return 0;
-    }
+  // Return top 50
+  return scored.slice(0, 50);
+}
 
-    let matchedWords = 0;
-    let consecutiveMatches = 0;
-    let maxConsecutive = 0;
-    let lastMatchIndex = -2;
+/**
+ * Fallback search: fuzzy token-level using Levenshtein distance.
+ * Scans all verses and finds matches with edit distance <= 1.
+ *
+ * @param query - Normalized search query
+ * @returns Array of ranked results
+ */
+function fallbackFuzzySearch(query: string): TranslationRankedResult[] {
+  const db = getDatabase();
 
-    for (const qWord of queryWords) {
-      const matchIndex = translationWords.findIndex(
-        (tWord) => tWord.includes(qWord) || qWord.includes(tWord),
-      );
+  // Load all verses for fuzzy matching
+  const sql = `
+    SELECT id, number, surah_id, juz_id,
+           text, transliteration, translation_id
+    FROM verses
+  `;
 
-      if (matchIndex !== -1) {
-        matchedWords++;
+  const result = db.execute(sql);
+  const rows = (result.rows?._array ?? []) as unknown as VerseRow[];
 
-        // Track consecutive matches
-        if (matchIndex === lastMatchIndex + 1) {
-          consecutiveMatches++;
-          maxConsecutive = Math.max(maxConsecutive, consecutiveMatches);
-        } else {
-          consecutiveMatches = 1;
-        }
-        lastMatchIndex = matchIndex;
+  const candidates: TranslationRankedResult[] = [];
+
+  for (const row of rows) {
+    const translation = (row.translation_id ?? '').toLowerCase();
+
+    // Split translation into words
+    const words = translation.split(/\W+/).filter(Boolean);
+
+    // Find minimum Levenshtein distance across all words
+    let bestDist = Infinity;
+
+    for (const word of words) {
+      const dist = levenshtein(word, query);
+      if (dist < bestDist) {
+        bestDist = dist;
+      }
+
+      // Early exit if exact match found
+      if (bestDist === 0) {
+        break;
       }
     }
 
-    // Score based on matched word ratio
-    const wordMatchRatio = matchedWords / queryWords.length;
-    score += wordMatchRatio * 50;
+    // Only include if distance <= 1 (tolerate small typos)
+    if (bestDist <= 1) {
+      const score = calculateFuzzyScore(bestDist, translation.length);
 
-    // Bonus for consecutive word matches (phrase-like)
-    score += (maxConsecutive / queryWords.length) * 30;
+      candidates.push({
+        verse: mapRowToVerse(row),
+        score,
+      });
+    }
   }
 
-  return Math.min(100, Math.max(0, score));
+  // Sort by score descending
+  candidates.sort((a, b) => b.score - a.score);
+
+  // Return top 50
+  return candidates.slice(0, 50);
 }
 
 /**
  * Search verses by Indonesian translation with ranking.
  *
- * This function:
- * 1. Fetches candidate verses from SQLite using LIKE on translation_id
- * 2. Applies scoring to rank candidates
- * 3. Returns top results sorted by score
+ * Two-stage search:
+ * 1. Primary: keyword-based using SQL LIKE - fast and handles exact/substring matches
+ * 2. Fallback: fuzzy token-level search - handles typos like "syurga" vs "surga"
  *
  * @param queryRaw - Raw user query string
  * @param maxResults - Maximum number of results to return (default 50)
@@ -147,52 +235,25 @@ export function searchByTranslationRanked(
   queryRaw: string,
   maxResults: number = 50,
 ): TranslationRankedResult[] {
-  const query = normalizeIndonesian(queryRaw);
+  // Normalize query
+  const query = queryRaw.trim().toLowerCase();
 
   // Require at least 2 characters for meaningful search
   if (!query || query.length < 2) {
     return [];
   }
 
-  const db = getDatabase();
+  // Stage 1: Primary keyword search using LIKE
+  const primaryResults = primaryKeywordSearch(query);
 
-  // Split query into words for more flexible matching
-  const words = query.split(/\s+/).filter((w) => w.length > 1);
+  if (primaryResults.length > 0) {
+    return primaryResults.slice(0, maxResults);
+  }
 
-  // Build WHERE clause for word matching
-  // Match verses containing any of the query words
-  const likeConditions = words.map(() => "translation_id LIKE '%' || ? || '%'").join(' OR ');
-  const params = words.length > 0 ? words : [query];
+  // Stage 2: Fallback fuzzy search when LIKE gives 0 results
+  const fuzzyResults = fallbackFuzzySearch(query);
 
-  const sql = `
-    SELECT
-      id, number, surah_id, juz_id,
-      text, transliteration, translation_id
-    FROM verses
-    WHERE ${likeConditions || "translation_id LIKE '%' || ? || '%'"}
-    LIMIT 300
-  `;
-
-  const result = db.execute(sql, params);
-  const rows = (result.rows?._array ?? []) as unknown as VerseRow[];
-
-  // Apply scoring to each candidate
-  const scored = rows.map((row) => {
-    const translation = row.translation_id ?? '';
-    const score = calculateTranslationScore(translation, query);
-
-    return {
-      verse: mapRowToVerse(row),
-      score,
-    };
-  });
-
-  // Filter out zero/low scores and sort by score descending
-  const filtered = scored.filter((r) => r.score > 10);
-  filtered.sort((a, b) => b.score - a.score);
-
-  // Return top results
-  return filtered.slice(0, maxResults);
+  return fuzzyResults.slice(0, maxResults);
 }
 
 /**
