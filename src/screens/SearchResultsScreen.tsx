@@ -10,12 +10,18 @@ import { EmptyState } from 'components/common/EmptyState';
 import { VerseCard } from 'components/verses/VerseCard';
 import { useTheme } from 'lib/theme/ThemeProvider';
 import { RootStackParamList } from 'app/navigation/types';
-import { Verse, SearchResult } from 'lib/types';
-import { searchByLafazRanked } from 'lib/quran/searchByLafaz';
-import { searchByTranslationRanked } from 'lib/quran/searchByTranslation';
+import { Verse } from 'lib/types';
+import { searchByLafazRanked, RankedResult } from 'lib/quran/searchByLafaz';
+import {
+  searchByTranslationRanked,
+  TranslationRankedResult,
+} from 'lib/quran/searchByTranslation';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'SearchResults'>;
 type SearchResultsRouteProp = RouteProp<RootStackParamList, 'SearchResults'>;
+
+/** Union type for search results from both modes */
+type SearchResultItem = RankedResult | TranslationRankedResult;
 
 export default function SearchResultsScreen() {
   const navigation = useNavigation<NavigationProp>();
@@ -23,7 +29,7 @@ export default function SearchResultsScreen() {
   const { colors, spacing, typography } = useTheme();
 
   const { query, mode } = route.params;
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<SearchResultItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -124,15 +130,24 @@ export default function SearchResultsScreen() {
       <FlatList
         data={results}
         keyExtractor={(item) => String(item.verse.id)}
-        renderItem={({ item }) => (
-          <VerseCard
-            verse={item.verse}
-            onPress={() => handleVersePress(item.verse)}
-            highlightText={query}
-            highlightMode={mode}
-            score={item.score}
-          />
-        )}
+        renderItem={({ item }) => {
+          // For terjemahan mode, prefer highlightToken (the actual word from translation)
+          // Fall back to raw query if highlightToken is not available
+          const highlightText =
+            mode === 'terjemahan' && 'highlightToken' in item && item.highlightToken
+              ? item.highlightToken
+              : query;
+
+          return (
+            <VerseCard
+              verse={item.verse}
+              onPress={() => handleVersePress(item.verse)}
+              highlightText={highlightText}
+              highlightMode={mode}
+              score={item.score}
+            />
+          );
+        }}
         contentContainerStyle={[
           styles.listContent,
           { paddingHorizontal: spacing.md, paddingBottom: spacing.lg, gap: spacing.sm },

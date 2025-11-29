@@ -8,6 +8,7 @@
 
 import { getDatabase } from '../database/connection';
 import { levenshtein } from './levenshtein';
+import { normalizeIdWord } from './normalizeId';
 import type { Verse, SearchResult } from '../types';
 
 /**
@@ -29,6 +30,8 @@ export interface VerseRow {
 export interface TranslationRankedResult {
   verse: Verse;
   score: number;
+  /** The actual word from translation to highlight (for fuzzy matches) */
+  highlightToken?: string;
 }
 
 /**
@@ -110,12 +113,52 @@ function calculateFuzzyScore(bestDist: number, translationLength: number): numbe
 }
 
 /**
+ * Find the actual word in translation that best matches the query.
+ * Used to determine what to highlight in the UI.
+ *
+ * @param translation - The verse's translation text
+ * @param queryRaw - The raw user query
+ * @returns The original word from translation to highlight, or undefined
+ */
+function findHighlightToken(
+  translation: string,
+  queryRaw: string,
+): string | undefined {
+  const qNorm = normalizeIdWord(queryRaw);
+  if (!qNorm || qNorm.length < 3) {
+    return undefined;
+  }
+
+  const words = translation.split(/\s+/);
+
+  for (const w of words) {
+    const wNorm = normalizeIdWord(w);
+    if (!wNorm) {
+      continue;
+    }
+
+    // If normalized forms overlap, consider it a match
+    if (wNorm.includes(qNorm) || qNorm.includes(wNorm)) {
+      // Return the ORIGINAL word as it appears in translation, e.g. "surga"
+      // Strip punctuation for cleaner highlighting
+      return w.replace(/^[("«»""']+/, '').replace(/[.,;:!?)"'«»""']+$/, '');
+    }
+  }
+
+  return undefined;
+}
+
+/**
  * Primary search: keyword-based using SQL LIKE.
  *
  * @param query - Normalized search query
+ * @param queryRaw - Original raw query for highlight token computation
  * @returns Array of ranked results, or empty if no matches
  */
-function primaryKeywordSearch(query: string): TranslationRankedResult[] {
+function primaryKeywordSearch(
+  query: string,
+  queryRaw: string,
+): TranslationRankedResult[] {
   const db = getDatabase();
 
   // Query using LIKE on lowercase translation_id
@@ -141,13 +184,18 @@ function primaryKeywordSearch(query: string): TranslationRankedResult[] {
   const scored: TranslationRankedResult[] = [];
 
   for (const row of rows) {
-    const translation = (row.translation_id ?? '').toLowerCase();
-    const score = calculateKeywordScore(translation, query, tokens);
+    const translation = row.translation_id ?? '';
+    const translationLower = translation.toLowerCase();
+    const score = calculateKeywordScore(translationLower, query, tokens);
 
     if (score > 0) {
+      // Find the actual word to highlight
+      const highlightToken = findHighlightToken(translation, queryRaw);
+
       scored.push({
         verse: mapRowToVerse(row),
         score,
+        highlightToken,
       });
     }
   }
@@ -164,9 +212,13 @@ function primaryKeywordSearch(query: string): TranslationRankedResult[] {
  * Scans all verses and finds matches with edit distance <= 1.
  *
  * @param query - Normalized search query
+ * @param queryRaw - Original raw query for highlight token computation
  * @returns Array of ranked results
  */
-function fallbackFuzzySearch(query: string): TranslationRankedResult[] {
+function fallbackFuzzySearch(
+  query: string,
+  queryRaw: string,
+): TranslationRankedResult[] {
   const db = getDatabase();
 
   // Load all verses for fuzzy matching
@@ -182,10 +234,11 @@ function fallbackFuzzySearch(query: string): TranslationRankedResult[] {
   const candidates: TranslationRankedResult[] = [];
 
   for (const row of rows) {
-    const translation = (row.translation_id ?? '').toLowerCase();
+    const translation = row.translation_id ?? '';
+    const translationLower = translation.toLowerCase();
 
     // Split translation into words
-    const words = translation.split(/\W+/).filter(Boolean);
+    const words = translationLower.split(/\W+/).filter(Boolean);
 
     // Find minimum Levenshtein distance across all words
     let bestDist = Infinity;
@@ -204,11 +257,15 @@ function fallbackFuzzySearch(query: string): TranslationRankedResult[] {
 
     // Only include if distance <= 1 (tolerate small typos)
     if (bestDist <= 1) {
-      const score = calculateFuzzyScore(bestDist, translation.length);
+      const score = calculateFuzzyScore(bestDist, translationLower.length);
+
+      // Find the actual word to highlight
+      const highlightToken = findHighlightToken(translation, queryRaw);
 
       candidates.push({
         verse: mapRowToVerse(row),
         score,
+        highlightToken,
       });
     }
   }
@@ -244,14 +301,14 @@ export function searchByTranslationRanked(
   }
 
   // Stage 1: Primary keyword search using LIKE
-  const primaryResults = primaryKeywordSearch(query);
+  const primaryResults = primaryKeywordSearch(query, queryRaw);
 
   if (primaryResults.length > 0) {
     return primaryResults.slice(0, maxResults);
   }
 
   // Stage 2: Fallback fuzzy search when LIKE gives 0 results
-  const fuzzyResults = fallbackFuzzySearch(query);
+  const fuzzyResults = fallbackFuzzySearch(query, queryRaw);
 
   return fuzzyResults.slice(0, maxResults);
 }
