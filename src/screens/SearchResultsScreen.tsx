@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EmptyState } from 'components/common/EmptyState';
 import { VerseCard } from 'components/verses/VerseCard';
 import { ArrowLeft } from 'components/icons/ArrowLeft';
+import { FloatingAudioPlayer } from 'components/audio/FloatingAudioPlayer';
 import { useTheme } from 'lib/theme/ThemeProvider';
 import { RootStackParamList } from 'app/navigation/types';
 import { Verse } from 'lib/types';
@@ -43,6 +44,7 @@ export default function SearchResultsScreen() {
   const [results, setResults] = useState<SearchResultItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentVerse, setCurrentVerse] = useState<Verse | null>(null);
 
   useEffect(() => {
     const fetchResults = () => {
@@ -70,6 +72,11 @@ export default function SearchResultsScreen() {
   const handleVersePress = (verse: Verse) => {
     // navigation.navigate('VerseDetail', { verseKey: verse.verse_key });
     console.log('Verse pressed:', verse.verse_key);
+    setCurrentVerse(verse);
+  };
+
+  const handleClosePlayer = () => {
+    setCurrentVerse(null);
   };
 
   const getModeLabel = () => {
@@ -151,7 +158,10 @@ export default function SearchResultsScreen() {
           );
         }}
         style={styles.listContainer}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[
+          styles.listContent,
+          currentVerse && styles.listContentWithPlayer,
+        ]}
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <EmptyState
@@ -162,6 +172,9 @@ export default function SearchResultsScreen() {
           </View>
         }
       />
+
+      {/* Floating Audio Player */}
+      <FloatingAudioPlayer verse={currentVerse} onClose={handleClosePlayer} />
     </View>
   );
 }
@@ -222,6 +235,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     gap: 12,
+  },
+  listContentWithPlayer: {
+    paddingBottom: 100, // Add padding when audio player is visible
   },
   emptyState: {
     flex: 1,
