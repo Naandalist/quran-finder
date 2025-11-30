@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Verse } from 'lib/types';
 import { HighlightedText } from 'components/common/HighlightedText';
 import surahs from 'lib/quran/surahs.json';
+import { colors } from 'lib/theme/colors';
+import { spacing } from 'lib/theme/spacing';
 
 interface SurahInfo {
   id: number;
@@ -26,10 +28,7 @@ export const VerseCard: React.FC<VerseCardProps> = ({
   onPress,
   highlightText,
   highlightMode = 'lafaz',
-  score,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
   // Get surah info from surahs.json
   const surahInfo: SurahInfo | undefined = surahs.find(
     (s: SurahInfo) => s.id === verse.surah_id,
@@ -37,11 +36,6 @@ export const VerseCard: React.FC<VerseCardProps> = ({
 
   const surahName = surahInfo?.name || `Surah ${verse.surah_id}`;
   const surahType = surahInfo?.type || 'Makkiyah';
-  const surahNumber = surahInfo?.id || verse.surah_id;
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
 
   return (
     <TouchableOpacity
@@ -67,175 +61,92 @@ export const VerseCard: React.FC<VerseCardProps> = ({
       {/* Arabic Text */}
       <Text style={styles.arabicText}>{verse.text}</Text>
 
-      {/* Transliteration */}
-      <HighlightedText
-        text={verse.transliteration}
-        query={highlightMode === 'lafaz' ? highlightText : undefined}
-        highlightColor="#2F97AA"
-        style={styles.transliterationText}
-      />
-
-      {/* Translation (only show when expanded) */}
-      {isExpanded && (
+      {/* Show Transliteration for lafaz mode, Translation for terjemahan mode */}
+      {highlightMode === 'lafaz' ? (
+        <HighlightedText
+          text={verse.transliteration}
+          query={highlightText}
+          highlightColor={colors.tealDark}
+          style={styles.transliterationText}
+        />
+      ) : (
         <HighlightedText
           text={verse.translation_id}
-          query={highlightMode === 'terjemahan' ? highlightText : undefined}
-          highlightColor="#3B82F6"
+          query={highlightText}
+          highlightColor={colors.tealDark}
           style={styles.translationText}
         />
       )}
-
-      {/* Score Badge at Bottom Left */}
-      {/* {score !== undefined && (
-        <View style={styles.scoreBadgeContainer}>
-          <View style={styles.scoreBadge}>
-            <ScoreIcon size={16} color="#E31F25" />
-            <Text style={styles.scoreBadgeText}>{Math.round(score)}%</Text>
-          </View>
-        </View>
-      )} */}
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
+    backgroundColor: colors.background,
+    borderRadius: spacing.borderRadius.sm,
     borderWidth: 0.5,
-    borderColor: '#95a5a6',
-    // paddingBottom: 16,
+    borderColor: colors.grayBorder,
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   surahBadge: {
-    backgroundColor: '#ADE3EF',
+    backgroundColor: colors.tealLight,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderTopLeftRadius: 8,
-    borderBottomRightRadius: 8,
-    paddingRight: 20,
+    borderTopLeftRadius: spacing.borderRadius.sm,
+    borderBottomRightRadius: spacing.borderRadius.sm,
+    paddingRight: spacing.cardPadding,
   },
   surahBadgeText: {
-    color: '#2F97AA',
+    color: colors.tealDark,
     fontSize: 12,
     fontWeight: '600',
   },
   typeBadge: {
-    // backgroundColor: '#FFC8C9',
-    backgroundColor: '#D1FAE5',
+    backgroundColor: colors.greenLight,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderTopLeftRadius: 8,
-    borderBottomRightRadius: 8,
-    marginLeft: -8,
+    borderTopLeftRadius: spacing.borderRadius.sm,
+    borderBottomRightRadius: spacing.borderRadius.sm,
+    marginLeft: -spacing.sm,
   },
   typeBadgeText: {
-    // color: '#E31F25',
-    color: '#059669',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  scoreBadgeContainer: {
-    alignItems: 'flex-start',
-    marginTop: 8,
-  },
-  scoreBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#FFC8C9',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderTopRightRadius: 8,
-    borderBottomLeftRadius: 8,
-  },
-  scoreBadgeText: {
-    // color: '#059669',
-    color: '#E31F25',
+    color: colors.greenDark,
     fontSize: 12,
     fontWeight: '600',
   },
   arabicText: {
     fontSize: 24,
     fontFamily: 'noorehuda',
-    color: '#1F2937',
+    color: colors.gray800,
     textAlign: 'right',
     lineHeight: 48,
     marginBottom: 12,
-    marginHorizontal: 16,
+    marginHorizontal: spacing.md,
   },
   transliterationText: {
-    fontSize: 14,
+    fontSize: 11,
     fontFamily: 'Montserrat-Italic',
-    lineHeight: 25,
+    lineHeight: 18,
     letterSpacing: 0.5,
-    color: '#6B7280',
+    color: colors.gray500,
     textAlign: 'left',
-    marginBottom: 16,
-    marginHorizontal: 16,
+    marginBottom: spacing.md,
+    marginHorizontal: spacing.md,
   },
   translationText: {
-    fontSize: 14,
-    color: '#4B5563',
+    fontSize: 11,
+    color: colors.gray600,
     textAlign: 'left',
-    marginBottom: 16,
-    lineHeight: 22,
-  },
-  bottomRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    paddingTop: 12,
-  },
-  chipsContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#E8F1F7',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    gap: 4,
-    borderBottomLeftRadius: 8,
-  },
-  chipIcon: {
-    fontSize: 12,
-  },
-  chipText: {
-    fontSize: 12,
-    color: '#1C71B1',
-    fontWeight: '500',
-  },
-  chipOutline: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-  },
-  chipOutlineText: {
-    fontSize: 12,
-    color: '#4B5563',
-    fontWeight: '500',
-  },
-  expandButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  expandIcon: {
-    fontSize: 18,
-    color: '#9CA3AF',
+    marginBottom: spacing.md,
+    marginHorizontal: spacing.md,
+    lineHeight: 18,
+    letterSpacing: 0.5,
   },
 });
 

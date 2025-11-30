@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, TextProps, TextStyle } from 'react-native';
 import { normalizeLatin, stripVowels } from 'lib/quran/normalizeLatin';
+import { colors } from 'lib/theme/colors';
 
 interface HighlightedTextProps extends TextProps {
   /**
@@ -13,7 +14,7 @@ interface HighlightedTextProps extends TextProps {
   query?: string;
   /**
    * Background color for highlighted segments
-   * @default '#22c55e'
+   * @default colors.highlight (#22c55e)
    */
   highlightColor?: string;
   /**
@@ -31,7 +32,7 @@ interface HighlightedTextProps extends TextProps {
 export const HighlightedText: React.FC<HighlightedTextProps> = ({
   text,
   query,
-  highlightColor = '#22c55e',
+  highlightColor = colors.highlight,
   highlightTextColor,
   style,
   ...textProps
@@ -63,7 +64,7 @@ export const HighlightedText: React.FC<HighlightedTextProps> = ({
           </Text>
         ) : (
           <Text key={index}>{segment.text}</Text>
-        )
+        ),
       )}
     </Text>
   );
@@ -117,7 +118,10 @@ function findMatches(
     return [];
   }
 
-  const { transformed: transformedText, normToOrig } = buildPositionMap(text, transform);
+  const { transformed: transformedText, normToOrig } = buildPositionMap(
+    text,
+    transform,
+  );
 
   const matches: Array<{ start: number; end: number }> = [];
   let searchPos = 0;

@@ -11,6 +11,8 @@ import SoundPlayer from 'react-native-sound-player';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Verse } from 'lib/types';
 import surahs from 'lib/quran/surahs.json';
+import { colors } from 'lib/theme/colors';
+import { spacing } from 'lib/theme/spacing';
 
 interface SurahInfo {
   id: number;
@@ -29,7 +31,7 @@ interface FloatingAudioPlayerProps {
 // Play icon component
 const PlayIcon = ({
   size = 24,
-  color = '#FFFFFF',
+  color = colors.white,
 }: {
   size?: number;
   color?: string;
@@ -58,15 +60,15 @@ const playIconStyles = StyleSheet.create({
   triangle: {
     width: 0,
     height: 0,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
+    borderTopColor: colors.transparent,
+    borderBottomColor: colors.transparent,
   },
 });
 
 // Pause icon component
 const PauseIcon = ({
   size = 24,
-  color = '#FFFFFF',
+  color = colors.white,
 }: {
   size?: number;
   color?: string;
@@ -106,7 +108,7 @@ const pauseIconStyles = StyleSheet.create({
 // Close icon component
 const CloseIcon = ({
   size = 20,
-  color = '#9CA3AF',
+  color = colors.gray400,
 }: {
   size?: number;
   color?: string;
@@ -188,7 +190,7 @@ const StaticWaveform = ({ progress }: { progress: number }) => {
               waveformStyles.bar,
               {
                 height: `${amplitude * 100}%`,
-                backgroundColor: isPlayed ? '#0D9488' : '#4B5563',
+                backgroundColor: isPlayed ? colors.teal : colors.gray600,
               },
             ]}
           />
@@ -204,7 +206,7 @@ const waveformStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     height: 36,
-    paddingHorizontal: 2,
+    paddingHorizontal: spacing['2xs'],
   },
   bar: {
     width: 3,
@@ -389,7 +391,7 @@ export const FloatingAudioPlayer: React.FC<FloatingAudioPlayerProps> = ({
       {/* Close button row */}
       <View style={styles.closeButtonRow}>
         <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-          <CloseIcon size={20} color="#9CA3AF" />
+          <CloseIcon size={20} color={colors.gray400} />
         </TouchableOpacity>
       </View>
 
@@ -421,11 +423,11 @@ export const FloatingAudioPlayer: React.FC<FloatingAudioPlayerProps> = ({
           disabled={isLoading}
         >
           {isLoading ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
+            <ActivityIndicator size="small" color={colors.white} />
           ) : isPlaying ? (
-            <PauseIcon size={24} color="#FFFFFF" />
+            <PauseIcon size={24} color={colors.white} />
           ) : (
-            <PlayIcon size={24} color="#FFFFFF" />
+            <PlayIcon size={24} color={colors.white} />
           )}
         </TouchableOpacity>
       </View>
@@ -439,38 +441,38 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#1F2937',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    shadowColor: '#000',
+    backgroundColor: colors.gray800,
+    borderTopLeftRadius: spacing.borderRadius.lg,
+    borderTopRightRadius: spacing.borderRadius.lg,
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.15,
-    shadowRadius: 8,
+    shadowRadius: spacing.sm,
     elevation: 10,
   },
   closeButtonRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    paddingTop: 8,
-    paddingHorizontal: 8,
+    paddingTop: spacing.sm,
+    paddingHorizontal: spacing.sm,
   },
   visualizerContainer: {
     height: 36,
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing.md,
     justifyContent: 'center',
   },
   content: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing.md,
     paddingVertical: 12,
   },
   artworkContainer: {
     width: 48,
     height: 48,
-    borderRadius: 8,
+    borderRadius: spacing.borderRadius.sm,
     overflow: 'hidden',
-    backgroundColor: '#374151',
+    backgroundColor: colors.gray700,
   },
   infoContainer: {
     flex: 1,
@@ -479,25 +481,25 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   artist: {
     fontSize: 12,
-    color: '#9CA3AF',
-    marginTop: 2,
+    color: colors.gray400,
+    marginTop: spacing['2xs'],
   },
   playButton: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: '#0D9488',
+    borderRadius: spacing.lg,
+    backgroundColor: colors.teal,
     alignItems: 'center',
     justifyContent: 'center',
   },
   closeButton: {
-    width: 32,
-    height: 32,
-    marginLeft: 8,
+    width: spacing.xl,
+    height: spacing.xl,
+    marginLeft: spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },

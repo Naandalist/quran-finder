@@ -1,5 +1,6 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
+import { colors } from 'lib/theme/colors';
 
 interface ScoreIconProps {
   size?: number;
@@ -8,7 +9,7 @@ interface ScoreIconProps {
 
 export const ScoreIcon: React.FC<ScoreIconProps> = ({
   size = 16,
-  color = '#E31F25',
+  color = colors.scoreRed,
 }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">

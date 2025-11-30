@@ -41,7 +41,9 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({
         // Verify database has data
         const populated = await isDatabasePopulated();
         if (!populated) {
-          throw new Error('Database is empty. Please rebuild with: pnpm build:quran-db');
+          throw new Error(
+            'Database is empty. Please rebuild with: pnpm build:quran-db',
+          );
         }
 
         setIsReady(true);
@@ -62,16 +64,18 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({
         style={[
           styles.container,
           { backgroundColor: colors.background, padding: spacing.lg },
-        ]}>
+        ]}
+      >
         <Text style={[typography.h3, { color: colors.error }]}>
-          Database Error
+          {__DEV__ ? 'SQLite Error' : 'Error'}
         </Text>
         <Text
           style={[
             typography.body,
             { color: colors.textMuted, marginTop: spacing.md },
-          ]}>
-          {error}
+          ]}
+        >
+          {__DEV__ ? error : 'Uninstall and reinstall app to fix this issue.'}
         </Text>
       </View>
     );
@@ -83,13 +87,15 @@ export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({
         style={[
           styles.container,
           { backgroundColor: colors.background, padding: spacing.lg },
-        ]}>
+        ]}
+      >
         <ActivityIndicator size="large" color={colors.primary} />
         <Text
           style={[
             typography.body,
             { color: colors.text, marginTop: spacing.md },
-          ]}>
+          ]}
+        >
           Memuat database...
         </Text>
       </View>

@@ -1,5 +1,6 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
+import { colors } from 'lib/theme/colors';
 
 interface ArrowLeftProps {
   size?: number;
@@ -8,7 +9,7 @@ interface ArrowLeftProps {
 
 export const ArrowLeft: React.FC<ArrowLeftProps> = ({
   size = 24,
-  color = '#FFFFFF',
+  color = colors.white,
 }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">

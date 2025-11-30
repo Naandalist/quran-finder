@@ -1982,17 +1982,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-async-storage/async-storage@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@react-native-async-storage/async-storage@npm:2.2.0"
-  dependencies:
-    merge-options: "npm:^3.0.4"
-  peerDependencies:
-    react-native: ^0.0.0-0 || >=0.65 <1.0
-  checksum: 10c0/84900eba46a40225c4ac9bf5eb58885200dc1e789d873ecda46a2a213870cc7110536ed1fd7a74b873071f3603c093958fbd84c635d6f6d4f94bfbb616ffa0ef
-  languageName: node
-  linkType: hard
-
 "@react-native-community/cli-clean@npm:20.0.0":
   version: 20.0.0
   resolution: "@react-native-community/cli-clean@npm:20.0.0"
@@ -2390,20 +2379,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native/new-app-screen@npm:0.82.1":
-  version: 0.82.1
-  resolution: "@react-native/new-app-screen@npm:0.82.1"
-  peerDependencies:
-    "@types/react": ^19.1.0
-    react: "*"
-    react-native: "*"
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 10c0/a8c789735b5818c1ce699f7bde26fe3b3bcb039a98fa06f80a77fd36a83d4a55f591926932a72f62ed26338fb39c7258d855f299b58e56d21f1914fe2964c592
-  languageName: node
-  linkType: hard
-
 "@react-native/normalize-colors@npm:0.82.1":
   version: 0.82.1
   resolution: "@react-native/normalize-colors@npm:0.82.1"
@@ -2453,7 +2428,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-navigation/elements@npm:^2.8.3, @react-navigation/elements@npm:^2.8.4":
+"@react-navigation/elements@npm:^2.8.4":
   version: 2.8.4
   resolution: "@react-navigation/elements@npm:2.8.4"
   dependencies:
@@ -2470,23 +2445,6 @@ __metadata:
     "@react-native-masked-view/masked-view":
       optional: true
   checksum: 10c0/6ada8150d27aac531477c2c0157e2f58bfb1f22686bc5f3b25c06cf0fb001f4c6c60dce5d85c782d8bd02a04f1d9eb167e93e757ba429eff22db239fc8fb9135
-  languageName: node
-  linkType: hard
-
-"@react-navigation/material-top-tabs@npm:^7.4.5":
-  version: 7.4.5
-  resolution: "@react-navigation/material-top-tabs@npm:7.4.5"
-  dependencies:
-    "@react-navigation/elements": "npm:^2.8.4"
-    color: "npm:^4.2.3"
-    react-native-tab-view: "npm:^4.2.0"
-  peerDependencies:
-    "@react-navigation/native": ^7.1.22
-    react: ">= 18.2.0"
-    react-native: "*"
-    react-native-pager-view: ">= 6.0.0"
-    react-native-safe-area-context: ">= 4.0.0"
-  checksum: 10c0/8eb3d4dfab830efe816195de33b54c8bf5bceed2932925b33e9849495a268f39acbc37053650dbe180f22498ef4ed489d0892a1c13fe50f64a817f6d3d12f5a6
   languageName: node
   linkType: hard
 
@@ -6094,13 +6052,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-plain-obj@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "is-plain-obj@npm:2.1.0"
-  checksum: 10c0/e5c9814cdaa627a9ad0a0964ded0e0491bfd9ace405c49a5d63c88b30a162f1512c069d5b80997893c4d0181eadc3fed02b4ab4b81059aba5620bfcdfdeb9c53
-  languageName: node
-  linkType: hard
-
 "is-promise@npm:^4.0.0":
   version: 4.0.0
   resolution: "is-promise@npm:4.0.0"
@@ -7192,15 +7143,6 @@ __metadata:
   version: 2.0.0
   resolution: "merge-descriptors@npm:2.0.0"
   checksum: 10c0/95389b7ced3f9b36fbdcf32eb946dc3dd1774c2fdf164609e55b18d03aa499b12bd3aae3a76c1c7185b96279e9803525550d3eb292b5224866060a288f335cb3
-  languageName: node
-  linkType: hard
-
-"merge-options@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "merge-options@npm:3.0.4"
-  dependencies:
-    is-plain-obj: "npm:^2.1.0"
-  checksum: 10c0/02b5891ceef09b0b497b5a0154c37a71784e68ed71b14748f6fd4258ffd3fe4ecd5cb0fd6f7cae3954fd11e7686c5cb64486daffa63c2793bbe8b614b61c7055
   languageName: node
   linkType: hard
 
@@ -8445,17 +8387,13 @@ __metadata:
     "@babel/preset-env": "npm:^7.25.3"
     "@babel/runtime": "npm:^7.25.0"
     "@naandalist/patch-package": "npm:^8.1.6"
-    "@react-native-async-storage/async-storage": "npm:^2.2.0"
     "@react-native-community/cli": "npm:20.0.0"
     "@react-native-community/cli-platform-android": "npm:20.0.0"
     "@react-native-community/cli-platform-ios": "npm:20.0.0"
     "@react-native/babel-preset": "npm:0.82.1"
     "@react-native/eslint-config": "npm:0.82.1"
     "@react-native/metro-config": "npm:0.82.1"
-    "@react-native/new-app-screen": "npm:0.82.1"
     "@react-native/typescript-config": "npm:0.82.1"
-    "@react-navigation/elements": "npm:^2.8.3"
-    "@react-navigation/material-top-tabs": "npm:^7.4.5"
     "@react-navigation/native": "npm:^7.1.21"
     "@react-navigation/native-stack": "npm:^7.8.0"
     "@rozenite/metro": "npm:^1.0.0"
@@ -8476,7 +8414,6 @@ __metadata:
     react-native-mmkv: "npm:^4.0.1"
     react-native-nitro-modules: "npm:^0.31.10"
     react-native-nitro-sqlite: "npm:^9.2.0"
-    react-native-pager-view: "npm:^6.9.1"
     react-native-safe-area-context: "npm:^5.5.2"
     react-native-screens: "npm:^4.18.0"
     react-native-sound-player: "npm:^0.14.5"
@@ -8636,16 +8573,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-pager-view@npm:^6.9.1":
-  version: 6.9.1
-  resolution: "react-native-pager-view@npm:6.9.1"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/c5229d230734ad9dad0b1e296168f0eebc5cff1b4b63201266ee7d5ecadc2e9c584b426b4ef146718c2e581dfcf63914174133b3ed1657294ccd437c22dbbc05
-  languageName: node
-  linkType: hard
-
 "react-native-safe-area-context@npm:^5.5.2":
   version: 5.6.2
   resolution: "react-native-safe-area-context@npm:5.6.2"
@@ -8687,19 +8614,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/0da39529fedcc84d2deaad19e261453069675520cb446a08d97eebc10f1205ce0393a9760ad58bc7b80feaa60e94c30d2d5b90d3111451f260b3888a4fbc2e06
-  languageName: node
-  linkType: hard
-
-"react-native-tab-view@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "react-native-tab-view@npm:4.2.0"
-  dependencies:
-    use-latest-callback: "npm:^0.2.4"
-  peerDependencies:
-    react: ">= 18.2.0"
-    react-native: "*"
-    react-native-pager-view: ">= 6.0.0"
-  checksum: 10c0/14f1f619cc656cb0e7b19108fb2421de9c613d7659ef978fe2f8081950a1756c8aa7b65b243c0047079ad3b6846f047e88f667d9e697819f131eef599c3275be
   languageName: node
   linkType: hard
 

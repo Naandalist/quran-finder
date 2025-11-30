@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider } from 'lib/theme/ThemeProvider';
 import { RootNavigator } from 'app/navigation/RootNavigator';
 import { colors } from 'lib/theme/colors';
+import { fontFamily } from 'lib/theme/typography';
 import { DatabaseProvider } from 'app/DatabaseProvider';
 
 const AppRoot: React.FC = () => {
@@ -12,37 +13,38 @@ const AppRoot: React.FC = () => {
       <ThemeProvider>
         <DatabaseProvider>
           <NavigationContainer
-          theme={{
-            dark: false,
-            colors: {
-              primary: colors.primary,
-              background: colors.background,
-              card: colors.surface,
-              text: colors.text,
-              border: colors.border,
-              notification: colors.primary,
-            },
-            fonts: {
-              regular: {
-                fontFamily: 'System',
-                fontWeight: '400',
+            theme={{
+              dark: false,
+              colors: {
+                primary: colors.primary,
+                background: colors.background,
+                card: colors.surface,
+                text: colors.text,
+                border: colors.border,
+                notification: colors.primary,
               },
-              medium: {
-                fontFamily: 'System',
-                fontWeight: '500',
+              fonts: {
+                regular: {
+                  fontFamily: fontFamily.montserrat.regular,
+                  fontWeight: '400',
+                },
+                medium: {
+                  fontFamily: fontFamily.montserrat.medium,
+                  fontWeight: '500',
+                },
+                bold: {
+                  fontFamily: fontFamily.montserrat.bold,
+                  fontWeight: '700',
+                },
+                heavy: {
+                  fontFamily: fontFamily.montserrat.extraBold,
+                  fontWeight: '800',
+                },
               },
-              bold: {
-                fontFamily: 'System',
-                fontWeight: '700',
-              },
-              heavy: {
-                fontFamily: 'System',
-                fontWeight: '800',
-              },
-            },
-          }}>
-          <RootNavigator />
-        </NavigationContainer>
+            }}
+          >
+            <RootNavigator />
+          </NavigationContainer>
         </DatabaseProvider>
       </ThemeProvider>
     </SafeAreaProvider>
