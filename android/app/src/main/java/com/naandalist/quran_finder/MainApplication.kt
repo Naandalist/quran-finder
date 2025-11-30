@@ -1,4 +1,4 @@
-package com.quran_finder
+package com.naandalist.quran_finder
 
 import android.app.Application
 import com.facebook.react.PackageList

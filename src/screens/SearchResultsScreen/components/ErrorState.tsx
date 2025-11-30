@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { EmptyState } from 'components/common/EmptyState';
+import { EmptyState } from 'components/common';
 
 import { styles } from '../styles';
 

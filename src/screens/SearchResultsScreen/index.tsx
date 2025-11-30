@@ -1,9 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { FloatingAudioPlayer } from 'components/audio/FloatingAudioPlayer';
-
 import { styles } from './styles';
+import { FloatingAudioPlayer } from './components/FloatingAudioPlayer';
 import { useSearchResults } from './hooks';
 import {
   Header,

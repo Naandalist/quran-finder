@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import { QueryMode } from 'lib/types';
-import { ChevronDown } from 'components/icons/ChevronDown';
+import { ChevronDown } from 'components/icons';
 import { colors } from 'lib/theme/colors';
 import { styles, TEAL_COLOR } from '../styles';
 import { MODE_LABELS, MAX_QUERY_LENGTH } from '../hooks';

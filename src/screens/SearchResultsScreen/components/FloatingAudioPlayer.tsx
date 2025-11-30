@@ -153,7 +153,7 @@ const closeIconStyles = StyleSheet.create({
 // Quran artwork image
 const QuranArtwork = () => (
   <Image
-    source={require('../../../assets/a_verse_from_qur_an.jpg')}
+    source={require('../../../../assets/a_verse_from_qur_an.jpg')}
     style={quranArtworkStyles.image}
     resizeMode="cover"
   />

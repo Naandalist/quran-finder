@@ -9,6 +9,7 @@ import {
   searchByTranslationRanked,
   TranslationRankedResult,
 } from 'lib/quran/searchByTranslation';
+import storage from 'lib/storage';
 
 // ============================================================================
 // Types
@@ -22,6 +23,30 @@ type SearchResultsRouteProp = RouteProp<RootStackParamList, 'SearchResults'>;
 
 /** Union type for search results from both modes */
 export type SearchResultItem = RankedResult | TranslationRankedResult;
+
+interface RecentQuery {
+  query: string;
+  mode: 'lafaz' | 'terjemahan';
+  timestamp: number;
+}
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+function saveToHistory(query: string, mode: 'lafaz' | 'terjemahan') {
+  const stored = storage.get<RecentQuery[]>(storage.keys.RECENT_QUERIES) || [];
+  const newSearch: RecentQuery = {
+    query,
+    mode,
+    timestamp: Date.now(),
+  };
+  const updated = [newSearch, ...stored.filter(s => s.query !== query)].slice(
+    0,
+    10,
+  );
+  storage.set(storage.keys.RECENT_QUERIES, updated);
+}
 
 // ============================================================================
 // useSearchResults Hook
@@ -51,6 +76,11 @@ export function useSearchResults() {
             : searchByTranslationRanked(query);
 
         setResults(searchResults);
+
+        // Only save to history if there are results
+        if (searchResults.length > 0) {
+          saveToHistory(query, mode);
+        }
       } catch (err) {
         console.error('Search error:', err);
         setError(err instanceof Error ? err.message : 'Search failed');

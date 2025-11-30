@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
-import { CloseIcon } from 'components/icons/CloseIcon';
+import { CloseIcon } from 'components/icons';
 import { colors } from 'lib/theme/colors';
 
 import { styles } from '../styles';

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
 import { QueryMode } from 'lib/types';
-import { ArrowUpRight } from 'components/icons/ArrowUpRight';
+import { ArrowUpRight } from 'components/icons';
 import { colors } from 'lib/theme/colors';
 import { styles } from '../styles';
 import { MODE_LABELS, EXAMPLE_SEARCHES } from '../hooks';

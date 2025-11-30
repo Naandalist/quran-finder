@@ -20,7 +20,7 @@ export interface Verse extends VerseRaw {
   verse_key: string; // computed: "surah_id:number"
 }
 
-export type QueryMode = 'lafaz' | 'makna';
+export type QueryMode = 'lafaz' | 'terjemahan';
 
 export interface SearchResult {
   verse: Verse;

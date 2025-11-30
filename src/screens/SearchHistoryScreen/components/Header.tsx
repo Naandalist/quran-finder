@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
-import { ArrowLeft } from 'components/icons/ArrowLeft';
+import { ArrowLeft } from 'components/icons';
 import { colors } from 'lib/theme/colors';
 
 import { styles } from '../styles';

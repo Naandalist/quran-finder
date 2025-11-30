@@ -1,15 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
+} from 'react-native';
 import { useTheme } from 'lib/theme/ThemeProvider';
 
 interface EmptyStateProps {
   icon?: string;
+  image?: ImageSourcePropType;
   title: string;
   message?: string;
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
-  icon = '📭',
+  image,
   title,
   message,
 }) => {
@@ -17,16 +24,22 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
   return (
     <View style={[styles.container, { padding: spacing.xl }]}>
-      <Text style={styles.icon}>{icon}</Text>
-      <Text style={[typography.h3, { color: colors.text, marginTop: spacing.md }]}>
+      {image ? (
+        <Image source={image} style={styles.image} resizeMode="contain" />
+      ) : null}
+      <Text
+        style={[typography.h3, { color: colors.text, marginTop: spacing.md }]}
+      >
         {title}
       </Text>
       {message && (
         <Text
           style={[
             typography.body,
-            { color: colors.textMuted, marginTop: spacing.sm, textAlign: 'center' },
-          ]}>
+            styles.message,
+            { color: colors.textMuted, marginTop: spacing.sm },
+          ]}
+        >
           {message}
         </Text>
       )}
@@ -42,6 +55,13 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 48,
+  },
+  image: {
+    width: 120,
+    height: 120,
+  },
+  message: {
+    textAlign: 'center',
   },
 });
 

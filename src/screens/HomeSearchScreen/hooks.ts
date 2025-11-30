@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { TextInput, ScrollView, Animated } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as yup from 'yup';
 
@@ -27,22 +27,22 @@ export interface RecentQuery {
 // Constants
 // ============================================================================
 
-export const MAX_QUERY_LENGTH = 30;
+export const MAX_QUERY_LENGTH = 15;
 
 export const MODE_LABELS: Record<QueryMode, string> = {
   lafaz: 'Lafaz (latin)',
-  makna: 'Terjemahan (Indonesia)',
+  terjemahan: 'Terjemahan (Indonesia)',
 };
 
 export const MODE_PLACEHOLDERS: Record<QueryMode, string> = {
   lafaz: 'Contoh: qulhuallahu...',
-  makna: 'Contoh: balasan orang sabar...',
+  terjemahan: 'Contoh: buah-buahan...',
 };
 
 export const EXAMPLE_SEARCHES: Array<{ query: string; mode: QueryMode }> = [
   { query: 'Bismillah', mode: 'lafaz' },
   { query: 'yaayuhalkafirun', mode: 'lafaz' },
-  { query: 'surga', mode: 'makna' },
+  { query: 'surga', mode: 'terjemahan' },
 ];
 
 // Yup validation schema
@@ -50,7 +50,7 @@ const querySchema = yup
   .string()
   .required('Kata kunci tidak boleh kosong')
   .max(MAX_QUERY_LENGTH, `Maksimal ${MAX_QUERY_LENGTH} karakter`)
-  .matches(/^[a-zA-Z\s']+$/, 'Hanya huruf yang diperbolehkan');
+  .matches(/^[a-zA-Z\s'-]+$/, 'Hanya huruf yang diperbolehkan');
 
 // ============================================================================
 // useShakeAnimation Hook
@@ -99,12 +99,15 @@ export function useShakeAnimation() {
 export function useRecentSearches() {
   const [recentSearches, setRecentSearches] = useState<RecentQuery[]>([]);
 
-  useEffect(() => {
-    const stored = storage.get<RecentQuery[]>(storage.keys.RECENT_QUERIES);
-    if (stored) {
-      setRecentSearches(stored);
-    }
-  }, []);
+  // Reload history when screen gains focus (to get newly saved searches)
+  useFocusEffect(
+    useCallback(() => {
+      const stored = storage.get<RecentQuery[]>(storage.keys.RECENT_QUERIES);
+      if (stored) {
+        setRecentSearches(stored);
+      }
+    }, []),
+  );
 
   const addRecentSearch = useCallback(
     (query: string, mode: QueryMode) => {
@@ -154,8 +157,15 @@ export function useHomeSearch() {
 
   // Hooks
   const { shakeAnimation, triggerShake } = useShakeAnimation();
-  const { recentSearches, addRecentSearch, deleteRecentSearch } =
-    useRecentSearches();
+  const { recentSearches, deleteRecentSearch } = useRecentSearches();
+
+  // Reset query when screen gains focus (coming back from SearchResults)
+  useFocusEffect(
+    useCallback(() => {
+      setQuery('');
+      setQueryError('');
+    }, []),
+  );
 
   // Handlers
   const handleQueryChange = useCallback(
@@ -181,13 +191,11 @@ export function useHomeSearch() {
       return;
     }
 
-    addRecentSearch(trimmedQuery, mode);
-
     navigation.navigate('SearchResults', {
       query: trimmedQuery,
-      mode: mode === 'lafaz' ? 'lafaz' : 'terjemahan',
+      mode: mode,
     });
-  }, [query, mode, navigation, addRecentSearch, triggerShake]);
+  }, [query, mode, navigation, triggerShake]);
 
   const handleSelectItem = useCallback(
     (itemQuery: string, itemMode: QueryMode) => {

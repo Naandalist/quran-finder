@@ -27,7 +27,7 @@ export interface RecentQuery {
 
 export const MODE_LABELS: Record<QueryMode, string> = {
   lafaz: 'Lafaz (latin)',
-  makna: 'Terjemahan (Indonesia)',
+  terjemahan: 'Terjemahan (Indonesia)',
 };
 
 // ============================================================================
@@ -52,7 +52,7 @@ export function useSearchHistory() {
     (item: RecentQuery) => {
       navigation.navigate('SearchResults', {
         query: item.query,
-        mode: item.mode === 'lafaz' ? 'lafaz' : 'terjemahan',
+        mode: item.mode,
       });
     },
     [navigation],

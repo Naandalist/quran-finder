@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, FlatList } from 'react-native';
 
-import { EmptyState } from 'components/common/EmptyState';
-import { VerseCard } from 'components/verses/VerseCard';
+import { EmptyState } from 'components/common';
+import { VerseCard } from './VerseCard';
 import { Verse } from 'lib/types';
 
 import { styles } from '../styles';
@@ -53,7 +53,6 @@ export function SearchResultsList({
       ListEmptyComponent={
         <View style={styles.emptyState}>
           <EmptyState
-            icon="📖"
             title="Tidak Ditemukan"
             message={`Tidak ada ayat yang cocok dengan "${query}"`}
           />

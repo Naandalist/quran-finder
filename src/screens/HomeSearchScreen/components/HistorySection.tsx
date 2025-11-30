@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
 import { QueryMode } from 'lib/types';
-import { CloseIcon } from 'components/icons/CloseIcon';
+import { CloseIcon } from 'components/icons';
 import { colors } from 'lib/theme/colors';
 import { styles } from '../styles';
 import { MODE_LABELS, RecentQuery } from '../hooks';
