@@ -26,6 +26,30 @@ export const fontFamily = {
     black: 'Montserrat-Black',
     blackItalic: 'Montserrat-BlackItalic',
   },
+  // Inter variants
+  inter: {
+    light: 'Inter-Light',
+    regular: 'Inter-Regular',
+    medium: 'Inter-Medium',
+    semiBold: 'Inter-SemiBold',
+    bold: 'Inter-Bold',
+  },
+  // Arabic fonts
+  arabic: {
+    // ArefRuqaa - Traditional Arabic calligraphy style
+    arefRuqaa: {
+      regular: 'ArefRuqaa-Regular',
+      bold: 'ArefRuqaa-Bold',
+    },
+    // OmarNaskh - Clean Naskh style for Quran
+    omarNaskh: {
+      regular: 'OmarNaskh-Regular',
+      medium: 'OmarNaskh-Medium',
+      bold: 'OmarNaskh-Bold',
+    },
+    // NooreHuda - Beautiful Quran font
+    nooreHuda: 'noorehuda',
+  },
   // Display/Decorative fonts
   display: {
     crushedStrike: 'CrushedStrike',
@@ -118,10 +142,41 @@ export const typography: Record<string, TextStyle> = {
     fontFamily: fontFamily.montserrat.semiBold,
     lineHeight: 18,
   },
-  // Arabic text (uses system font for proper Arabic rendering)
+  // Arabic text styles - using OmarNaskh for Quran text
   arabic: {
-    fontSize: 24,
-    fontWeight: '400',
-    lineHeight: 40,
+    fontSize: 28,
+    fontFamily: fontFamily.arabic.omarNaskh.regular,
+    lineHeight: 56,
+  },
+  arabicMedium: {
+    fontSize: 28,
+    fontFamily: fontFamily.arabic.omarNaskh.medium,
+    lineHeight: 56,
+  },
+  arabicBold: {
+    fontSize: 28,
+    fontFamily: fontFamily.arabic.omarNaskh.bold,
+    lineHeight: 56,
+  },
+  arabicSmall: {
+    fontSize: 22,
+    fontFamily: fontFamily.arabic.omarNaskh.regular,
+    lineHeight: 44,
+  },
+  arabicLarge: {
+    fontSize: 32,
+    fontFamily: fontFamily.arabic.omarNaskh.regular,
+    lineHeight: 64,
+  },
+  // ArefRuqaa - for decorative Arabic headers
+  arabicDisplay: {
+    fontSize: 36,
+    fontFamily: fontFamily.arabic.arefRuqaa.regular,
+    lineHeight: 72,
+  },
+  arabicDisplayBold: {
+    fontSize: 36,
+    fontFamily: fontFamily.arabic.arefRuqaa.bold,
+    lineHeight: 72,
   },
 };

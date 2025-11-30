@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+  StatusBar,
+} from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Screen } from 'components/layout/Screen';
-import { AppBar } from 'components/layout/AppBar';
-import { IconButton } from 'components/common/IconButton';
 import { EmptyState } from 'components/common/EmptyState';
 import { VerseCard } from 'components/verses/VerseCard';
+import { ArrowLeft } from 'components/icons/ArrowLeft';
 import { useTheme } from 'lib/theme/ThemeProvider';
 import { RootStackParamList } from 'app/navigation/types';
 import { Verse } from 'lib/types';
@@ -17,7 +24,10 @@ import {
   TranslationRankedResult,
 } from 'lib/quran/searchByTranslation';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'SearchResults'>;
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'SearchResults'
+>;
 type SearchResultsRouteProp = RouteProp<RootStackParamList, 'SearchResults'>;
 
 /** Union type for search results from both modes */
@@ -26,7 +36,8 @@ type SearchResultItem = RankedResult | TranslationRankedResult;
 export default function SearchResultsScreen() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<SearchResultsRouteProp>();
-  const { colors, spacing, typography } = useTheme();
+  const { colors, typography } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const { query, mode } = route.params;
   const [results, setResults] = useState<SearchResultItem[]>([]);
@@ -57,84 +68,75 @@ export default function SearchResultsScreen() {
   }, [query, mode]);
 
   const handleVersePress = (verse: Verse) => {
-    navigation.navigate('VerseDetail', { verseKey: verse.verse_key });
+    // navigation.navigate('VerseDetail', { verseKey: verse.verse_key });
+    console.log('Verse pressed:', verse.verse_key);
   };
 
   const getModeLabel = () => {
-    return mode === 'lafaz' ? 'Lafaz (Latin)' : 'Terjemahan (ID)';
+    return mode === 'lafaz' ? 'Mode lafaz' : 'Mode terjemahan';
   };
+
+  const renderHeader = () => (
+    <View style={[styles.headerContainer, { paddingTop: insets.top }]}>
+      <StatusBar barStyle="light-content" backgroundColor="#0D9488" />
+      <View style={styles.headerContent}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <ArrowLeft size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Hasil Pencarian</Text>
+        <View style={styles.headerSpacer} />
+      </View>
+    </View>
+  );
 
   if (isLoading) {
     return (
-      <Screen>
-        <AppBar
-          title={`"${query}"`}
-          left={
-            <IconButton
-              icon="←"
-              onPress={() => navigation.goBack()}
-            />
-          }
-        />
+      <View style={styles.screenContainer}>
+        {renderHeader()}
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={[typography.body, { color: colors.textMuted, marginTop: spacing.md }]}>
+          <Text style={[typography.body, styles.loadingText]}>
             Mencari ayat...
           </Text>
         </View>
-      </Screen>
+      </View>
     );
   }
 
   if (error) {
     return (
-      <Screen>
-        <AppBar
-          title={`"${query}"`}
-          left={
-            <IconButton
-              icon="←"
-              onPress={() => navigation.goBack()}
-            />
-          }
-        />
+      <View style={styles.screenContainer}>
+        {renderHeader()}
         <View style={styles.errorContainer}>
-          <EmptyState
-            icon="⚠️"
-            title="Terjadi Kesalahan"
-            message={error}
-          />
+          <EmptyState icon="⚠️" title="Terjadi Kesalahan" message={error} />
         </View>
-      </Screen>
+      </View>
     );
   }
 
   return (
-    <Screen>
-      <AppBar
-        title={`"${query}"`}
-        left={
-          <IconButton
-            icon="←"
-            onPress={() => navigation.goBack()}
-          />
-        }
-      />
+    <View style={styles.screenContainer}>
+      {renderHeader()}
 
-      <View style={[styles.resultsInfo, { paddingHorizontal: spacing.md, paddingVertical: spacing.sm }]}>
-        <Text style={[typography.bodySmall, { color: colors.textMuted }]}>
-          {results.length} hasil ditemukan • Mode: {getModeLabel()}
+      {/* Query Header Block */}
+      <View style={styles.queryHeader}>
+        <Text style={styles.queryText}>{query}</Text>
+        <Text style={styles.queryMeta}>
+          {results.length} ditemukan | {getModeLabel()}
         </Text>
       </View>
 
       <FlatList
         data={results}
-        keyExtractor={(item) => String(item.verse.id)}
+        keyExtractor={item => String(item.verse.id)}
         renderItem={({ item }) => {
-          // For terjemahan mode, prefer highlightToken (the actual word from translation)
-          // Fall back to raw query if highlightToken is not available
           const highlightText =
-            mode === 'terjemahan' && 'highlightToken' in item && item.highlightToken
+            mode === 'terjemahan' &&
+            'highlightToken' in item &&
+            item.highlightToken
               ? item.highlightToken
               : query;
 
@@ -148,10 +150,8 @@ export default function SearchResultsScreen() {
             />
           );
         }}
-        contentContainerStyle={[
-          styles.listContent,
-          { paddingHorizontal: spacing.md, paddingBottom: spacing.lg, gap: spacing.sm },
-        ]}
+        style={styles.listContainer}
+        contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <EmptyState
@@ -162,17 +162,66 @@ export default function SearchResultsScreen() {
           </View>
         }
       />
-    </Screen>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  resultsInfo: {
+  screenContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  headerContainer: {
+    backgroundColor: '#0D9488',
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    flex: 1,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40,
+  },
+  queryHeader: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: '#E5E7EB',
+  },
+  queryText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 4,
+  },
+  queryMeta: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  listContainer: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
   },
   listContent: {
     flexGrow: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
   },
   emptyState: {
     flex: 1,
@@ -184,6 +233,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  loadingText: {
+    color: '#757575',
+    marginTop: 16,
   },
   errorContainer: {
     flex: 1,
