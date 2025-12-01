@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import BootSplash from 'react-native-bootsplash';
 import { ThemeProvider } from 'lib/theme/ThemeProvider';
 import { RootNavigator } from 'app/navigation/RootNavigator';
 import { colors } from 'lib/theme/colors';
@@ -8,6 +9,14 @@ import { fontFamily } from 'lib/theme/typography';
 import { DatabaseProvider } from 'app/DatabaseProvider';
 
 const AppRoot: React.FC = () => {
+  useEffect(() => {
+    const init = async () => {
+      // Hide splash screen after app is ready
+      await BootSplash.hide({ fade: true });
+    };
+    init();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <ThemeProvider>
