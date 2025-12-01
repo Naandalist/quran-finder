@@ -19,6 +19,7 @@ export const styles = StyleSheet.create({
     fontSize: 40,
     fontFamily: 'CrushedStrike',
     color: colors.white,
+    marginTop: spacing.md,
     marginBottom: spacing.md,
   },
   heroSubtitleBold: {
@@ -26,7 +27,6 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     lineHeight: 22,
     color: colors.white,
-    marginBottom: spacing.sm,
   },
   heroSubtitle: {
     fontSize: 14,
