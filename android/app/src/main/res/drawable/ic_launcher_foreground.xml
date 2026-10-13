@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Preserve the source PNG's transparent padding. A 14% inset leaves about
+     5.2dp between the artwork and the 72dp circular adaptive icon mask. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:insetLeft="14%"
+    android:insetTop="14%"
+    android:insetRight="14%"
+    android:insetBottom="14%">
+    <bitmap
+        android:src="@drawable/app_icon"
+        android:gravity="fill"
+        android:filter="true" />
+</inset>
