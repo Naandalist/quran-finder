@@ -21,6 +21,8 @@ dengan menggunakan pencarian yang toleran terhadap kesalahan ketik (fuzzy search
 - Informasi surat dan nomor ayat,  
 - Fitur tambahan seperti pemutaran audio bacaan ayat (jika tersedia).
 
+Aplikasi disediakan secara **gratis** dan dapat menampilkan iklan. Rincian penayangan iklan dijelaskan pada bagian 6.
+
 **Penting:**  
 Aplikasi ini merupakan aplikasi independen yang **tidak** memiliki afiliasi resmi dengan Kementerian Agama Republik Indonesia, Lajnah Pentashihan Mushaf Al-Qur’an, lembaga fatwa, maupun lembaga keagamaan resmi lainnya. Aplikasi ini hanya dimaksudkan sebagai alat bantu pencarian ayat, **bukan** sebagai rujukan tunggal untuk penetapan hukum, fatwa, atau keputusan keagamaan.
 
@@ -51,7 +53,8 @@ Anda **tidak** diperbolehkan untuk:
 - Melakukan reverse engineering, dekompilasi, atau upaya lain untuk mengekstrak kode sumber, struktur basis data, atau konten internal aplikasi.  
 - Mengambil, mengkloning, atau mengemas ulang data ayat, terjemahan, atau aset lainnya dalam aplikasi untuk dibuat ulang sebagai aplikasi, layanan, atau produk lain tanpa izin.  
 - Menggunakan aplikasi untuk aktivitas yang melanggar hukum, menyesatkan, menipu, atau merugikan pihak lain.  
-- Mengganggu, merusak, atau mencoba merusak fungsi aplikasi atau server pendukung (misalnya melalui serangan siber, spam, atau penyalahgunaan trafik).
+- Mengganggu, merusak, atau mencoba merusak fungsi aplikasi atau server pendukung (misalnya melalui serangan siber, spam, atau penyalahgunaan trafik).  
+- Mengklik iklan secara berulang atau curang, menyembunyikan label iklan, atau memanipulasi permintaan/tayangan iklan.
 
 ## 4. Konten dan Hak Kekayaan Intelektual
 
@@ -75,7 +78,7 @@ Untuk urusan ibadah, hafalan, dan penetapan hukum, Anda **tetap dianjurkan** mem
 
 ### 5.1 Pengumpulan Data
 
-- Aplikasi **Cari Ayat** tidak mengumpulkan atau menyimpan data pribadi Anda di server.  
+- Aplikasi **Cari Ayat** tidak mengumpulkan atau menyimpan data pribadi Anda di server pengembang.  
 - Aplikasi tidak memerlukan akun, registrasi, atau login.
 
 Informasi berikut dapat disimpan secara **lokal di perangkat Anda** untuk kenyamanan penggunaan:
@@ -86,14 +89,17 @@ Informasi berikut dapat disimpan secara **lokal di perangkat Anda** untuk kenyam
 
 Data lokal ini tidak dikirim ke server pengembang.
 
+Penayangan iklan melalui Google AdMob dapat melibatkan pemrosesan data oleh Google, sebagaimana dijelaskan pada bagian 6 dan pada [Kebijakan Privasi](/privacy/).
+
 ### 5.2 Koneksi Server
 
 Aplikasi dapat terhubung ke server untuk:
 
 - Mengambil audio bacaan ayat atau konten pendukung lainnya.  
-- Melakukan pembaruan data teknis jika diperlukan.
+- Melakukan pembaruan data teknis jika diperlukan.  
+- Meminta dan menampilkan iklan melalui Google AdMob.
 
-Permintaan ke server umumnya hanya berisi informasi teknis minimal (misalnya ID surat/ayat atau parameter terkait) dan tidak disertai data identitas pribadi.
+Permintaan ke server pengembang (jika ada) umumnya hanya berisi informasi teknis minimal (misalnya ID surat/ayat atau parameter terkait) dan tidak disertai data identitas pribadi. Permintaan iklan ditangani oleh Google, bukan oleh server pengembang.
 
 ### 5.3 Keamanan
 
@@ -102,28 +108,70 @@ Kami berupaya menjaga keamanan sistem dan infrastruktur yang digunakan, namun:
 - Kami tidak dapat menjamin keamanan absolut terhadap segala bentuk gangguan, serangan, atau kegagalan teknis.  
 - Pengguna bertanggung jawab untuk menjaga keamanan perangkatnya sendiri (misalnya dengan tidak menginstal aplikasi dari sumber yang tidak terpercaya dan menjaga kerahasiaan perangkat).
 
-## 6. Disclaimer
+## 6. Iklan
 
-### 6.1 Sifat Informasi
+### 6.1 Penayangan Iklan
+
+Aplikasi **Cari Ayat** dapat menampilkan iklan untuk mendukung pengembangan dan pemeliharaan aplikasi.
+
+Iklan dapat muncul di beberapa layar, termasuk beranda, hasil pencarian, dan riwayat pencarian. Format, posisi, dan frekuensi iklan dapat berubah seiring pembaruan aplikasi.
+
+Iklan ditandai secara jelas (misalnya dengan label **Iklan**) agar dapat dibedakan dari teks ayat, transliterasi, dan terjemahan.
+
+### 6.2 Penyedia Iklan
+
+Iklan ditayangkan melalui **Google AdMob** (Google LLC). Pengembang tidak membuat, mengedit, atau mengendalikan isi iklan yang ditampilkan oleh pengiklan pihak ketiga.
+
+Dengan menggunakan aplikasi, Anda memahami bahwa:
+
+- Permintaan dan penayangan iklan ditangani oleh Google, bukan oleh server pengembang.  
+- Mengetuk iklan dapat membuka situs, toko aplikasi, atau tujuan lain yang ditentukan pengiklan melalui Google.  
+- Tombol pada iklan (misalnya “Instal” atau tautan serupa) **bukan** pemasang aplikasi di dalam **Cari Ayat**.
+
+Kebijakan privasi dan praktik iklan Google berlaku atas data yang diproses oleh Google:
+
+- [Kebijakan Privasi Google](https://policies.google.com/privacy)  
+- [Iklan dan data Google](https://policies.google.com/technologies/ads)
+
+Penjelasan mengenai data terkait iklan juga tersedia di [Kebijakan Privasi](/privacy/) kami.
+
+### 6.3 Persetujuan
+
+Di wilayah yang mewajibkan persetujuan (misalnya EEA/UK), formulir persetujuan Google dapat ditampilkan sebelum iklan diminta. Jika persetujuan tidak diberikan, iklan mungkin tidak ditampilkan atau ditampilkan dalam bentuk terbatas sesuai kebijakan Google.
+
+### 6.4 Tanggung Jawab atas Konten Iklan
+
+Pengembang **tidak bertanggung jawab** atas:
+
+- Isi, keakuratan, atau kesesuaian iklan pihak ketiga.  
+- Produk, layanan, atau situs yang diiklankan.  
+- Kerugian yang timbul dari interaksi Anda dengan iklan atau tujuan yang dibuka setelah mengetuk iklan.
+
+Iklan pihak ketiga **bukan** bagian dari teks Al-Qur’an, terjemahan, atau konten keagamaan aplikasi. Kehadiran iklan tidak berarti pengembang mendukung produk atau pesan yang diiklankan.
+
+## 7. Disclaimer
+
+### 7.1 Sifat Informasi
 
 - Aplikasi ini merupakan **alat bantu pencarian ayat**, bukan sumber resmi penetapan hukum atau fatwa.  
 - Informasi dalam aplikasi disediakan “apa adanya” (as is) tanpa jaminan eksplisit maupun implisit mengenai kelengkapan, keakuratan, atau kesesuaian untuk tujuan tertentu.
 
-### 6.2 Tanggung Jawab Pengguna
+### 7.2 Tanggung Jawab Pengguna
 
 - Pengguna bertanggung jawab penuh atas cara menggunakan informasi dari aplikasi.  
 - Untuk penafsiran makna ayat, penetapan hukum, atau keputusan penting terkait ibadah dan muamalah, pengguna dianjurkan untuk merujuk pada guru/ustaz/ulama yang terpercaya dan referensi resmi.
 
-### 6.3 Batasan Tanggung Jawab Pengembang
+### 7.3 Batasan Tanggung Jawab Pengembang
 
 Pengembang **tidak bertanggung jawab** atas:
 
 - Kesalahan penulisan, ketidakakuratan, atau keterlambatan pembaruan teks, transliterasi, maupun terjemahan.  
 - Perbedaan hasil pencarian akibat sifat fuzzy search yang menoleransi typo dan menampilkan hasil “paling mendekati”.  
 - Keputusan, tindakan, atau konsekuensi apa pun yang diambil pengguna berdasarkan penggunaan aplikasi ini.  
-- Kerugian material maupun immaterial yang timbul secara langsung atau tidak langsung dari penggunaan aplikasi, termasuk namun tidak terbatas pada kehilangan data, gangguan layanan, atau klaim pihak ketiga.
+- Kerugian material maupun immaterial yang timbul secara langsung atau tidak langsung dari penggunaan aplikasi, termasuk namun tidak terbatas pada kehilangan data, gangguan layanan, atau klaim pihak ketiga.  
+- Isi iklan pihak ketiga serta konsekuensi dari mengetuk atau mengikuti iklan tersebut.
 
-### 6.4 Pelepasan Tanggung Jawab
+### 7.4 Pelepasan Tanggung Jawab
 
 Dengan menggunakan aplikasi **Cari Ayat**, pengguna:
 
@@ -131,23 +179,24 @@ Dengan menggunakan aplikasi **Cari Ayat**, pengguna:
 - Membebaskan pengembang dari segala tuntutan hukum yang muncul akibat penggunaan informasi dari aplikasi.  
 - Memahami bahwa pengembang tidak berkewajiban memantau, mengoreksi, atau mengintervensi setiap penggunaan aplikasi oleh pengguna.  
 
-## 7. Pembaruan dan Perubahan
+## 8. Pembaruan dan Perubahan
 
-### 7.1 Pembaruan Aplikasi
+### 8.1 Pembaruan Aplikasi
 
 Kami berhak untuk:
 
 - Melakukan pembaruan aplikasi, baik dari sisi fitur, desain, maupun perbaikan teknis.  
-- Mengubah, menambah, atau menghapus fitur tertentu tanpa kewajiban pemberitahuan sebelumnya, sejauh diizinkan oleh kebijakan distribusi platform (misalnya Google Play).
+- Mengubah, menambah, atau menghapus fitur tertentu tanpa kewajiban pemberitahuan sebelumnya, sejauh diizinkan oleh kebijakan distribusi platform (misalnya Google Play).  
+- Mengubah format, posisi, atau frekuensi iklan.
 
-### 7.2 Perubahan Syarat
+### 8.2 Perubahan Syarat
 
 Syarat dan ketentuan ini dapat diperbarui sewaktu-waktu.
 
 - Perubahan akan diberlakukan sejak versi terbaru aplikasi dirilis atau sejak pemberitahuan perubahan disampaikan melalui aplikasi atau kanal resmi.  
 - Dengan terus menggunakan aplikasi setelah perubahan berlaku, Anda dianggap telah menyetujui syarat dan ketentuan yang telah diperbarui.
 
-## 8. Penghentian Layanan
+## 9. Penghentian Layanan
 
 Kami berhak:
 
@@ -156,18 +205,18 @@ Kami berhak:
 
 Pengguna dapat berhenti menggunakan aplikasi kapan saja dengan cara menghapus/uninstal aplikasi dari perangkat.
 
-## 9. Hukum yang Berlaku
+## 10. Hukum yang Berlaku
 
 Syarat dan ketentuan ini diatur dan ditafsirkan berdasarkan hukum Republik Indonesia.  
 Setiap perselisihan yang timbul dari penggunaan aplikasi ini akan diupayakan penyelesaiannya secara musyawarah terlebih dahulu.
 
-## 10. Kontak
+## 11. Kontak
 
 Jika Anda memiliki pertanyaan mengenai syarat dan ketentuan ini, silakan hubungi:
 
-- Email: dev@naandalist.com  
-- Website: https://www.naandalist.com  
+- Email: [dev@naandalist.com](mailto:dev@naandalist.com)  
+- Website: [https://www.naandalist.com](https://www.naandalist.com)
 
 ---
 
-*Terakhir diperbarui: Desember 2025*
+*Terakhir diperbarui: Oktober 2026*

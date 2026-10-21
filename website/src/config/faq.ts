@@ -14,6 +14,11 @@ export const faq: FAQ[] = [
   {
     question: "Apakah aplikasi Cari Ayat gratis?",
     answer:
-      "Ya, aplikasi Cari Ayat dapat diunduh dan digunakan secara gratis. Fitur utama seperti pencarian berdasarkan lafaz dan terjemahan, penilaian kemiripan hasil, penyorotan lafaz, dan tampilan teks ayat dapat diakses tanpa biaya. Beberapa fitur tambahan seperti pemutaran audio mungkin membutuhkan koneksi internet.",
+      "Ya, aplikasi Cari Ayat dapat diunduh dan digunakan secara gratis. Fitur utama seperti pencarian berdasarkan lafaz dan terjemahan, penilaian kemiripan hasil, penyorotan lafaz, dan tampilan teks ayat dapat diakses tanpa biaya. Aplikasi menampilkan iklan di beberapa layar. Mengetuk iklan ditangani oleh Google, bukan oleh pemasang aplikasi di dalam Cari Ayat. Beberapa fitur tambahan seperti pemutaran audio dan penayangan iklan membutuhkan koneksi internet.",
+  },
+  {
+    question: "Apakah Cari Ayat menampilkan iklan?",
+    answer:
+      "Ya. Iklan dari Google AdMob dapat muncul di beranda, hasil pencarian, dan riwayat pencarian, dan ditandai dengan label Iklan agar terpisah dari teks ayat. Isi iklan berasal dari pengiklan pihak ketiga. Rincian ada di Syarat dan Ketentuan serta Kebijakan Privasi.",
   },
 ];

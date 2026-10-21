@@ -2,15 +2,17 @@
 
 ## 1. Pendahuluan
 
-Kebijakan privasi ini menjelaskan bagaimana kami menangani informasi dalam aplikasi **Cari Ayat**. Kami berkomitmen untuk menjaga privasi pengguna dengan tidak mengumpulkan data pribadi ke server dan hanya menyimpan data yang benar-benar diperlukan untuk kenyamanan penggunaan di perangkat Anda sendiri.
+Kebijakan privasi ini menjelaskan bagaimana kami menangani informasi dalam aplikasi **Cari Ayat**. Kami berkomitmen untuk menjaga privasi pengguna dengan tidak mengumpulkan data pribadi ke server pengembang dan hanya menyimpan data yang benar-benar diperlukan untuk kenyamanan penggunaan di perangkat Anda sendiri.
+
+Aplikasi menampilkan iklan melalui Google AdMob. Google dapat memproses data terkait iklan sebagaimana dijelaskan pada bagian 4.
 
 ## 2. Prinsip Dasar Privasi
 
-### 2.1 Tidak Ada Pengumpulan Data Pribadi ke Server
+### 2.1 Tidak Ada Pengumpulan Data Pribadi ke Server Pengembang
 
-- Kami tidak mengumpulkan, menyimpan, atau memproses data pribadi Anda di server.
+- Kami tidak mengumpulkan, menyimpan, atau memproses data pribadi Anda di server pengembang.
 - Aplikasi tidak memerlukan registrasi atau login.
-- Kami tidak membangun profil pengguna, tidak melakukan pelacakan perilaku, dan tidak menjual data kepada pihak ketiga.
+- Kami tidak membangun profil pengguna di sisi pengembang, dan tidak menjual data kepada pihak ketiga.
 
 ### 2.2 Data yang Disimpan Secara Lokal di Perangkat
 
@@ -22,7 +24,7 @@ Untuk meningkatkan kenyamanan penggunaan, aplikasi **Cari Ayat** dapat menyimpan
 
 Data ini:
 - Hanya disimpan di perangkat Anda.
-- Tidak dikirim ke server kami.
+- Tidak dikirim ke server pengembang.
 - Dapat dihapus dengan menghapus riwayat di dalam aplikasi (jika fitur tersedia) atau dengan menghapus/uninstal aplikasi.
 
 ## 3. Koneksi Server
@@ -33,80 +35,94 @@ Aplikasi **Cari Ayat** dapat terhubung ke server untuk:
 
 - Mengambil konten pendukung seperti audio bacaan ayat atau berkas lain yang diperlukan.
 - Mengunduh pembaruan data atau perbaikan teknis tertentu bila diperlukan.
+- Meminta dan menampilkan iklan melalui Google AdMob.
 
 Dalam proses ini:
 
-- Permintaan ke server umumnya hanya berisi informasi teknis minimal (misalnya ID surat/ayat atau parameter teknis terkait).
+- Permintaan ke server pengembang (jika ada) umumnya hanya berisi informasi teknis minimal (misalnya ID surat/ayat atau parameter teknis terkait).
 - Kami tidak meminta nama, email, nomor telepon, atau identitas pribadi lainnya sebagai syarat penggunaan.
 
-### 3.2 Tidak Ada Logging Data Pengguna yang Dapat Mengidentifikasi
+### 3.2 Tidak Ada Logging Identitas di Server Pengembang
 
-- Kami tidak secara sengaja menyimpan atau mencatat data permintaan yang dapat digunakan untuk mengidentifikasi Anda sebagai individu.
-- Tidak ada pencatatan aktivitas pengguna untuk keperluan profiling iklan.
-- Tidak ada tracking atau analytics pihak ketiga yang mengumpulkan data pribadi (misalnya SDK iklan atau analytics yang melacak perilaku pengguna lintas aplikasi).
+- Pengembang tidak secara sengaja menyimpan atau mencatat data permintaan yang dapat digunakan untuk mengidentifikasi Anda sebagai individu.
+- Riwayat pencarian tidak dikirim ke server pengembang untuk keperluan profiling.
+- Data terkait iklan diproses oleh Google, bukan oleh server pengembang. Lihat bagian 4.
 
-## 4. Jenis Data yang TIDAK Kami Kumpulkan
+## 4. Iklan
 
-Kami dengan tegas menyatakan bahwa kami TIDAK mengumpulkan:
+Beberapa layar aplikasi menampilkan iklan dari **Google AdMob** (Google LLC), termasuk beranda, hasil pencarian, dan riwayat pencarian.
+
+Google dapat memproses pengenal iklan perangkat dan informasi lain yang diperlukan untuk menayangkan, mengukur, dan (jika diizinkan) mempersonalisasi iklan, sesuai kebijakan Google.
+
+Di wilayah yang mewajibkan persetujuan, formulir persetujuan Google dapat muncul sebelum iklan diminta.
+
+- [Kebijakan Privasi Google](https://policies.google.com/privacy)
+- [Iklan dan data Google](https://policies.google.com/technologies/ads)
+
+Pengembang tidak mengoperasikan server iklan sendiri dan tidak menerima salinan kata kunci pencarian Anda untuk keperluan iklan. Mengetuk iklan membuka tujuan pengiklan melalui Google. Tombol pada iklan (misalnya Instal) bukan pemasang aplikasi di dalam **Cari Ayat**.
+
+Pengembang tidak memasang SDK analytics terpisah untuk membangun profil pengguna lintas aplikasi.
+
+## 5. Jenis Data yang TIDAK Kami Kumpulkan
+
+Pengembang TIDAK mengumpulkan:
 
 - Informasi identitas pribadi (nama, alamat, email, nomor telepon).
 - Foto, kontak, atau media lain dari perangkat Anda.
 - Lokasi GPS atau data lokasi presisi.
 - Data keuangan atau informasi pembayaran.
 - Data login media sosial atau akun pihak ketiga.
-- Riwayat penggunaan aplikasi yang dikirim ke server untuk keperluan profiling.
+- Riwayat penggunaan aplikasi yang dikirim ke server pengembang untuk keperluan profiling.
 
-Riwayat kata kunci yang tampil di aplikasi hanyalah data lokal di perangkat Anda dan tidak dikirim ke server kami.
+Riwayat kata kunci yang tampil di aplikasi hanyalah data lokal di perangkat Anda dan tidak dikirim ke server pengembang.
 
-## 5. Hak Pengguna
+## 6. Hak Pengguna
 
-### 5.1 Tidak Ada Akun
+### 6.1 Tidak Ada Akun
 
 - Aplikasi **Cari Ayat** tidak memerlukan pembuatan akun atau login.
 - Tidak ada proses “penghapusan akun” karena memang tidak ada akun yang disimpan.
 - Anda dapat menggunakan aplikasi secara anonim.
 
-### 5.2 Kontrol atas Data Lokal
+### 6.2 Kontrol atas Data Lokal
 
 - Anda dapat menghapus data lokal (seperti riwayat pencarian) melalui fitur yang tersedia dalam aplikasi (jika disediakan), atau dengan menghapus/uninstal aplikasi dari perangkat Anda.
 - Setelah aplikasi dihapus, data lokal yang tersimpan oleh aplikasi juga akan ikut terhapus dari perangkat.
 
-### 5.3 Transparansi
+### 6.3 Transparansi
 
 - Kami berkomitmen untuk transparan mengenai cara aplikasi bekerja dan data apa saja yang digunakan.
 - Tidak ada “data tersembunyi” yang kami kumpulkan diam-diam di luar yang telah dijelaskan dalam kebijakan ini.
 
-## 6. Teknologi yang Digunakan
+## 7. Teknologi yang Digunakan
 
-### 6.1 Koneksi Internet
+### 7.1 Koneksi Internet
 
-- Koneksi internet digunakan untuk mengambil konten tertentu, seperti audio bacaan ayat atau pembaruan data.
-- Tanpa koneksi internet, sebagian fitur yang bergantung pada server (misalnya streaming atau pengunduhan audio) mungkin tidak berfungsi, tetapi fungsi pencarian dasar yang menggunakan data lokal tetap dapat berjalan (sesuai implementasi aplikasi).
-- Kami tidak menggunakan cookies, tracking pixels, atau mekanisme pelacakan sejenis di dalam aplikasi.
-- Kami tidak mengintegrasikan SDK analytics pihak ketiga yang mengumpulkan data pribadi pengguna.
+- Koneksi internet digunakan untuk mengambil konten tertentu (seperti audio bacaan ayat atau pembaruan data) dan untuk memuat iklan.
+- Tanpa koneksi internet, sebagian fitur yang bergantung pada server (misalnya streaming atau pengunduhan audio, serta penayangan iklan) mungkin tidak berfungsi, tetapi fungsi pencarian dasar yang menggunakan data lokal tetap dapat berjalan (sesuai implementasi aplikasi).
+- Pengembang tidak memasang SDK analytics pihak ketiga terpisah yang mengumpulkan data pribadi pengguna ke server pengembang.
 
-## 7. Perubahan Kebijakan
+## 8. Perubahan Kebijakan
 
-### 7.1 Komitmen Berkelanjutan
+### 8.1 Komitmen Berkelanjutan
 
 - Kami berkomitmen untuk menjaga prinsip minimasi data: hanya mengambil dan menggunakan data yang benar-benar diperlukan untuk menjalankan fungsi aplikasi.
-- Sejauh ini kami tidak mengumpulkan data pribadi ke server dan berupaya mempertahankan prinsip ini ke depannya.
+- Pengembang tidak mengumpulkan data pribadi ke server pengembang dan berupaya mempertahankan prinsip ini ke depannya.
 
-### 7.2 Notifikasi Perubahan
+### 8.2 Notifikasi Perubahan
 
 - Jika di masa mendatang terdapat perubahan kebijakan privasi yang signifikan, kami akan menyampaikan informasi perubahan tersebut melalui pembaruan aplikasi atau pemberitahuan yang jelas di dalam aplikasi.
 - Jika suatu saat kami perlu mengumpulkan data yang lebih sensitif, kami akan menjelaskannya secara eksplisit dan meminta persetujuan yang sesuai sebelum perubahan tersebut berlaku.
 
-## 8. Kontak
+## 9. Kontak
 
 Jika Anda memiliki pertanyaan mengenai kebijakan privasi atau ingin memastikan komitmen kami terhadap privasi Anda, silakan hubungi kami di:
 
-- Email: dev@naandalist.com  
-- Website: https://www.naandalist.com  
+- Email: [dev@naandalist.com](mailto:dev@naandalist.com)  
+- Website: [https://www.naandalist.com](https://www.naandalist.com)
 
 Kami siap memberikan klarifikasi mengenai cara kerja aplikasi dan komitmen kami dalam menjaga privasi Anda.
 
 ---
 
-*Terakhir diperbarui: Desember 2025*
-
+*Terakhir diperbarui: Oktober 2026*
