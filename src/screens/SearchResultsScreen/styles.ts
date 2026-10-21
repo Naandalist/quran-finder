@@ -61,6 +61,9 @@ export const styles = StyleSheet.create({
     color: colors.gray500,
     marginHorizontal: spacing.xs,
   },
+  resultsBody: {
+    flex: 1,
+  },
   listContainer: {
     flex: 1,
     backgroundColor: colors.gray100,

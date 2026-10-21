@@ -1,6 +1,5 @@
 const { withRozenite } = require('@rozenite/metro');
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
-const exclusionList = require('metro-config/src/defaults/exclusionList');
 
 /**
  * Metro configuration
@@ -8,13 +7,19 @@ const exclusionList = require('metro-config/src/defaults/exclusionList');
  *
  * @type {import('@react-native/metro-config').MetroConfig}
  */
+const defaultConfig = getDefaultConfig(__dirname);
+const defaultBlockList = defaultConfig.resolver.blockList;
+const websiteBlock = /[\\/]website[\\/].*/;
+
 const config = {
   resolver: {
     // website/ is a separate Astro app with its own node_modules.
-    blockList: exclusionList([/\/website\/.*/]),
+    blockList: Array.isArray(defaultBlockList)
+      ? [...defaultBlockList, websiteBlock]
+      : [defaultBlockList, websiteBlock],
   },
 };
 
-module.exports = withRozenite(mergeConfig(getDefaultConfig(__dirname), config), {
+module.exports = withRozenite(mergeConfig(defaultConfig, config), {
   enabled: process.env.WITH_ROZENITE === 'true',
 });

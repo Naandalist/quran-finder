@@ -80,3 +80,9 @@ yarn-error.log
 # Astro landing
 website/dist/
 website/.astro/
+
+# Local secrets
+.env
+.env.local
+.env.*.local
+

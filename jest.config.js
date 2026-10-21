@@ -1,5 +1,6 @@
 module.exports = {
   preset: 'react-native',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
     '^lib/(.*)$': '<rootDir>/src/lib/$1',
     '^components/(.*)$': '<rootDir>/src/components/$1',
@@ -8,6 +9,6 @@ module.exports = {
   },
   testPathIgnorePatterns: ['/node_modules/', '<rootDir>/website/'],
   transformIgnorePatterns: [
-    'node_modules/(?!(@react-native|react-native|react-native-nitro-sqlite)/)',
+    'node_modules/(?!(@react-native|react-native|react-native-nitro-sqlite|react-native-google-mobile-ads)/)',
   ],
 };
