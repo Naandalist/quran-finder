@@ -1,0 +1,74 @@
+---
+import Footer from "@components/sections/Footer";
+import PageAnimation from "@components/ui/PageAnimation";
+export interface Props {
+  title: string;
+  description?: string;
+  showFooter?: boolean;
+}
+
+const { title, description } = Astro.props;
+const { showFooter = true } = Astro.props;
+---
+
+<!doctype html>
+<html lang='id'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+
+    <!-- SEO Meta Tags -->
+    <meta
+      name='keywords'
+      content='cari ayat, al-quran, cari ayat al-quran, lafaz latin, terjemahan indonesia'
+    />
+    <meta name='author' content='Listiananda Apriliawan' />
+    <meta name='language' content='Indonesian' />
+    <meta name='revisit-after' content='7 days' />
+    <meta name='rating' content='general' />
+
+    <!-- Open Graph Meta Tags -->
+    <meta property='og:title' content={title} />
+    <meta property='og:type' content='website' />
+    <meta property='og:url' content={Astro.url.href} />
+    <meta
+      property='og:image'
+      content='https://cariayat.naandalist.com/cariayat-icon.webp'
+    />
+    <meta property='og:image:type' content='image/webp' />
+    <meta property='og:site_name' content='Cari Ayat' />
+    <meta property='og:locale' content='id_ID' />
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name='twitter:card' content='summary_large_image' />
+    <meta name='twitter:title' content={title} />
+    <meta
+      name='twitter:image'
+      content='https://cariayat.naandalist.com/cariayat-icon.webp'
+    />
+
+    {description && <meta name='description' content={description} />}
+    {description && <meta property='og:description' content={description} />}
+    {description && <meta name='twitter:description' content={description} />}
+
+    <meta name='theme-color' content='#ffffff' />
+    <title>{title}</title>
+    <script>
+      history.scrollRestoration = "manual";
+      window.addEventListener("load", () => {
+        window.scrollTo(0, 0);
+      });
+    </script>
+  </head>
+  <body class='bg-white font-sans text-black'>
+    <div class='mx-auto min-h-screen max-w-[800px]'>
+      <PageAnimation client:load>
+        <main>
+          <slot />
+        </main>
+        {showFooter && <Footer />}
+      </PageAnimation>
+    </div>
+  </body>
+</html>

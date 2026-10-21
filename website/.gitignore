@@ -1,0 +1,7 @@
+dist/
+.astro/
+node_modules/
+.yarn/install-state.gz
+.yarn/cache
+.env
+.env.production
