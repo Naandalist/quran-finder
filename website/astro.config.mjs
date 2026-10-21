@@ -7,5 +7,6 @@ import react from "@astrojs/react";
 export default defineConfig({
   site: "https://cariayat.naandalist.com",
   output: "static",
+  trailingSlash: "always",
   integrations: [tailwind(), react()],
 });

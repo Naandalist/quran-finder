@@ -2,10 +2,9 @@
 import BackToTop from "@components/ui/BackToTop";
 import Breadcrumbs from "@components/ui/Breadcrumbs";
 import Layout from "@layouts/Layout.astro";
-import { siteConfig } from "../config";
 import { marked } from "marked";
 
-const privacyModules = import.meta.glob("./content/privacy.md", {
+const privacyModules = import.meta.glob("../content/privacy.md", {
 	eager: true,
 });
 const privacyContent = Object.values(privacyModules)[0] as {
@@ -13,13 +12,13 @@ const privacyContent = Object.values(privacyModules)[0] as {
 };
 const htmlContent = marked(privacyContent.rawContent());
 
-const { title } = siteConfig;
+
 ---
 
-<Layout title={`${title} · Privacy Policy`} description={`Privacy Policy for ${title} application - How we handle and protect your data`}>
+<Layout title="Kebijakan Privasi | Cari Ayat" description="Cara Cari Ayat menangani data pengguna, penyimpanan lokal, dan iklan Google AdMob.">
   <main class="min-h-screen max-w-3xl mx-auto px-4 py-8">
     <Breadcrumbs 
-      items={[{ label: "Privacy Policy" }]}
+      items={[{ label: "Kebijakan Privasi" }]}
     />
     
     <div class="prose prose-sm sm:prose-base prose-slate max-w-none">

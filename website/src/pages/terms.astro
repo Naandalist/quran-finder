@@ -2,20 +2,19 @@
 import BackToTop from "@components/ui/BackToTop";
 import Breadcrumbs from "@components/ui/Breadcrumbs";
 import Layout from "@layouts/Layout.astro";
-import { siteConfig } from "../config";
 import { marked } from "marked";
 
-const termsModules = import.meta.glob("./content/terms.md", { eager: true });
+const termsModules = import.meta.glob("../content/terms.md", { eager: true });
 const termsContent = Object.values(termsModules)[0] as { rawContent(): string };
 const htmlContent = marked(termsContent.rawContent());
 
-const { title } = siteConfig;
+
 ---
 
-<Layout title={`${title} · Terms of Service`} description={`Terms of Service for ${title} application - Rules and guidelines for using our service`}>
+<Layout title="Syarat dan Ketentuan | Cari Ayat" description="Ketentuan penggunaan aplikasi Cari Ayat untuk mencari dan membaca ayat Al-Qur’an.">
   <main class="min-h-screen max-w-3xl mx-auto px-4 py-8">
     <Breadcrumbs 
-      items={[{ label: "Terms of Service" }]}
+      items={[{ label: "Syarat dan Ketentuan" }]}
     />
     
     <div class="prose prose-sm sm:prose-base prose-slate max-w-none">
