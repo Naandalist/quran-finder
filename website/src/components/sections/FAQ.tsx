@@ -1,26 +1,18 @@
-import { motion } from "framer-motion";
 import { memo } from "react";
 import type { FAQProps } from "config";
 
 const FAQ = ({ items }: FAQProps) => {
 	return (
 		<div className="mb-16">
-			<motion.h2
-				initial={{ opacity: 0, y: 10 }}
-				whileInView={{ opacity: 1, y: 0 }}
-				viewport={{ once: true }}
+			<h2
 				className="mb-6 text-2xl font-semibold"
 			>
-				FAQ
-			</motion.h2>
+				Pertanyaan tentang Cari Ayat
+			</h2>
 			<div className="space-y-4">
-				{items.map((item, index) => (
-					<motion.div
+				{items.map((item) => (
+					<div
 						key={item.question}
-						initial={{ opacity: 0, y: 20 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: true }}
-						transition={{ delay: index * 0.1 }}
 						className="overflow-hidden rounded-xl border border-gray-200 bg-gray-50"
 					>
 						<details className="group">
@@ -48,7 +40,7 @@ const FAQ = ({ items }: FAQProps) => {
 								</div>
 							</div>
 						</details>
-					</motion.div>
+					</div>
 				))}
 			</div>
 		</div>

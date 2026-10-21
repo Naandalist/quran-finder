@@ -11,15 +11,15 @@ const Screenshots = ({ images }: ScreenshotsProps) => {
 	return (
 		<div className="mb-16">
 			<div className="mb-6 flex items-center justify-between">
-				<h2 className="text-2xl font-semibold">Screenshots</h2>
+				<h2 className="text-2xl font-semibold">Tampilan Aplikasi</h2>
 				<DeviceToggle activeDevice={activeDevice} onToggle={setActiveDevice} />
 			</div>
 			<div className="relative overflow-hidden min-h-[400px]">
 				<motion.div
-					initial={{ opacity: 0, x: 20 }}
+					initial={false}
 					animate={{ opacity: 1, x: 0 }}
 					transition={{ duration: 0.3 }}
-					className="screenshots-container scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
+					className="screenshots-container overflow-x-auto scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
 					onAnimationComplete={() => {
 						const container = document.querySelector(
 							".screenshots-container",
@@ -37,7 +37,7 @@ const Screenshots = ({ images }: ScreenshotsProps) => {
 						{currentImages.map((image, index) => (
 							<motion.button
 								key={image}
-								initial={{ opacity: 0, y: 20 }}
+								initial={false}
 								animate={{
 									opacity: 1,
 									y: 0,
@@ -49,7 +49,7 @@ const Screenshots = ({ images }: ScreenshotsProps) => {
 							>
 								<img
 									src={image}
-									alt={`Screenshot ${index + 1}`}
+									alt={`Tampilan aplikasi Cari Ayat di ${activeDevice}, gambar ${index + 1}`}
 									className={`rounded-xl border border-gray-200 object-cover ${
 										activeDevice === "tablet"
 											? "aspect-[16/9] w-[460px]"

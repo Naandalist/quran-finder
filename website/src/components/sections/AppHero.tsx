@@ -1,5 +1,4 @@
 import { memo } from "react";
-import { FaStore } from "react-icons/fa";
 import type { AppHeroProps, StoreButtonProps } from "config";
 
 const AppHero = ({ title, description, storeLinks, logo }: AppHeroProps) => {
@@ -16,7 +15,9 @@ const AppHero = ({ title, description, storeLinks, logo }: AppHeroProps) => {
 					) : (
 						<img
 							src={logo.src}
-							alt="App Icon"
+							alt="Logo aplikasi Cari Ayat"
+                            width={160}
+                            height={160}
 							className="h-40 w-40 rounded-2xl shadow-lg object-cover"
 						/>
 					)}

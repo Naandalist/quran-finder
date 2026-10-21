@@ -1,6 +1,6 @@
 ---
 import Footer from "@components/sections/Footer";
-import PageAnimation from "@components/ui/PageAnimation";
+
 export interface Props {
   title: string;
   description?: string;
@@ -63,12 +63,10 @@ const { showFooter = true } = Astro.props;
   </head>
   <body class='bg-white font-sans text-black'>
     <div class='mx-auto min-h-screen max-w-[800px]'>
-      <PageAnimation client:load>
-        <main>
+      <div class="px-5">
           <slot />
-        </main>
         {showFooter && <Footer />}
-      </PageAnimation>
+      </div>
     </div>
   </body>
 </html>

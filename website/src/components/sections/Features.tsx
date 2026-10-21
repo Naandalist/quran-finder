@@ -4,7 +4,7 @@ import type { FeaturesProps } from "config";
 const Features = ({ items }: FeaturesProps) => {
 	return (
 		<div className="mb-16">
-			<h2 className="mb-6 text-2xl font-semibold">Features</h2>
+			<h2 className="mb-6 text-2xl font-semibold">Fitur Cari Ayat</h2>
 
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-3">
 				{items.map((feature) => {
