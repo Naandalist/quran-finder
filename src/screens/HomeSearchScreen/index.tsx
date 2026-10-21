@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
+import { BannerAdSlot } from 'lib/ads';
 
 import { styles } from './styles';
 import { useHomeSearch } from './hooks';
@@ -33,7 +34,7 @@ export default function HomeSearchScreen() {
   } = useHomeSearch();
 
   return (
-    <>
+    <View style={styles.screenWrap}>
       <ScrollView
         ref={scrollViewRef}
         style={styles.scrollContainer}
@@ -66,6 +67,10 @@ export default function HomeSearchScreen() {
 
         {/* Examples Section */}
         <ExamplesSection onSelectItem={handleSelectItem} />
+
+        <View style={styles.homeAdSection}>
+          <BannerAdSlot variant="card" />
+        </View>
       </ScrollView>
 
       {/* Mode Selection Modal */}
@@ -75,6 +80,6 @@ export default function HomeSearchScreen() {
         onClose={closeDropdown}
         onSelectMode={selectMode}
       />
-    </>
+    </View>
   );
 }

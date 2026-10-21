@@ -5,6 +5,10 @@ import { spacing } from '../../lib/theme/spacing';
 export const TEAL_COLOR = colors.teal;
 
 export const styles = StyleSheet.create({
+  screenWrap: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   scrollContainer: {
     flex: 1,
     backgroundColor: colors.background,
@@ -112,6 +116,11 @@ export const styles = StyleSheet.create({
     paddingTop: spacing.md,
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.md,
+  },
+  homeAdSection: {
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.xl,
   },
   historySectionWithPadding: {
     backgroundColor: colors.background,

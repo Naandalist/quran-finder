@@ -1,5 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
+import { BannerAdSlot } from 'lib/ads';
 
 import { styles } from './styles';
 import { useSearchHistory } from './hooks';
@@ -27,6 +28,7 @@ export default function SearchHistoryScreen() {
         onSelectItem={handleSelectItem}
         onDeleteItem={handleDeleteItem}
       />
+      <BannerAdSlot />
     </View>
   );
 }
