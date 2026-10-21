@@ -95,3 +95,14 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+
+## Website
+
+Static landing page in [`website/`](./website). It is a separate Yarn 4 project from the React Native app. GitHub Actions (`.github/workflows/pages.yml`) deploys `website/dist` to GitHub Pages when `website/**` changes on `main`. The intended address is `https://cariayat.naandalist.com`.
+
+```bash
+cd website
+yarn install
+yarn dev
+yarn build
+```

@@ -1,3 +1,4 @@
 <resources>
+    <color name="ic_launcher_background">#FFFFFF</color>
     <color name="bootsplash_background">#0d9488</color>
 </resources>
