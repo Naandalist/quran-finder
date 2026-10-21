@@ -2,7 +2,6 @@
 import AppHero from "@components/sections/AppHero";
 import FAQ from "@components/sections/FAQ";
 import Features from "@components/sections/Features";
-import Reviews from "@components/sections/Reviews";
 import Screenshots from "@components/sections/Screenshots";
 import SocialLinks from "@components/sections/SocialLinks";
 import Lightbox from "@components/ui/Lightbox";
@@ -18,11 +17,24 @@ const {
 	storeLinks,
 	socialLinks,
 	logo,
-	reviews,
 } = siteConfig;
+const seoTitle = "Cari Ayat Al-Qur'an dari Lafaz Latin & Terjemahan";
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  name: "Cari Ayat",
+  description,
+  url: Astro.site!.href,
+  image: new URL("/cariayat-icon.webp", Astro.site).href,
+  operatingSystem: "Android",
+  applicationCategory: "ReferenceApplication",
+  inLanguage: "id",
+  downloadUrl: storeLinks.google,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "IDR" },
+};
 ---
 
-<Layout title={title} description={description}>
+<Layout title={seoTitle} description={description} structuredData={structuredData}>
   <main class="min-h-screen max-w-5xl mx-auto px-4 py-8">
     <AppHero title={title} description={description} storeLinks={storeLinks} logo={logo} />
     
@@ -31,7 +43,6 @@ const {
     </div>
 
     <Features items={features} />
-    <!-- <Reviews items={reviews} client:visible /> -->
     <FAQ items={faqs} />
     <SocialLinks items={socialLinks} />
   </main>

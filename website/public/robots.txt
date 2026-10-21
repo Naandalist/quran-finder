@@ -1,3 +1,4 @@
 User-agent: *
-Allow: /app-ads.txt
 Allow: /
+
+Sitemap: https://cariayat.naandalist.com/sitemap.xml

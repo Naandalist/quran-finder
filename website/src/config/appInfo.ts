@@ -3,7 +3,7 @@ import type { AppLogo, StoreLinks } from "./types";
 export const appInfo = {
 	title: "Cari Ayat - Al-Qur'an",
 	description:
-		"Aplikasi untuk menemukan ayat Al-Qur'an meski ada typo atau hanya mengingatnya samar-samar.",
+		"Cari ayat Al-Qur'an dari lafaz latin atau terjemahan Indonesia, meski salah ketik. Baca teks Arab dan dengarkan audio ayat. Unduh gratis di Android.",
 	logo: {
 		type: "image" as AppLogo["type"],
 		src: "/cariayat-icon.webp",
