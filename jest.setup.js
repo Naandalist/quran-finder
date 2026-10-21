@@ -1,3 +1,10 @@
+jest.mock('react-native-dotenv', () => ({
+  ADMOB_ANDROID_APP_ID: '',
+  ADMOB_IOS_APP_ID: '',
+  ADMOB_NATIVE_UNIT_ID: '',
+  ADMOB_BANNER_UNIT_ID: '',
+}));
+
 jest.mock('react-native-google-mobile-ads', () => {
   const React = require('react');
   return {
