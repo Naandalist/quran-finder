@@ -1,108 +1,92 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Cari Ayat
 
-# Getting Started
+[![React Native](https://img.shields.io/github/package-json/dependency-version/Naandalist/quran-finder/react-native?logo=react&logoColor=61DAFB)](https://reactnative.dev)
+[![React](https://img.shields.io/github/package-json/dependency-version/Naandalist/quran-finder/react?logo=react&logoColor=61DAFB)](https://react.dev)
+[![Astro](https://img.shields.io/github/package-json/dependency-version/Naandalist/quran-finder/astro?filename=website%2Fpackage.json&logo=astro&logoColor=white&color=FF5D01)](https://astro.build)
+[![Website](https://img.shields.io/github/actions/workflow/status/Naandalist/quran-finder/pages.yml?branch=main&label=website)](https://github.com/Naandalist/quran-finder/actions/workflows/pages.yml)
+[![Google Play](https://img.shields.io/badge/Google_Play-Cari_Ayat-3DDC84?logo=googleplay&logoColor=white)](https://play.google.com/store/apps/details?id=com.naandalist.quran_finder)
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+Find Qur’an verses from a latin *lafaz* or an Indonesian translation keyword, even when the spelling is off.
 
-## Step 1: Start Metro
+This repository holds the Android app and its landing page.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+| Path | What it is | Stack |
+| --- | --- | --- |
+| Repo root | App (`com.naandalist.quran_finder`) | React Native, React, SQLite, Google AdMob |
+| [`website/`](./website) | Landing at [cariayat.naandalist.com](https://cariayat.naandalist.com) | Astro, React, Tailwind |
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+Play: [Cari Ayat on Google Play](https://play.google.com/store/apps/details?id=com.naandalist.quran_finder). Contact: [dev@naandalist.com](mailto:dev@naandalist.com).
 
-```sh
-# Using npm
+## Develop the app
+
+Requires Node.js 20+, JDK 17, Android SDK, and [React Native environment setup](https://reactnative.dev/docs/set-up-your-environment). Lockfile is `package-lock.json`. Use npm with `--legacy-peer-deps` (the app is not a Yarn project).
+
+```bash
+cp .env.example .env
+npm install --legacy-peer-deps
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
+In another terminal:
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
+```bash
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
+Fill `.env` with AdMob app and unit IDs. Leave keys empty to skip ads. Restart Metro with `--reset-cache` after changing `.env` or Babel env config.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+| Script | What it does |
+| --- | --- |
+| `npm start` | Metro |
+| `npm run android` / `npm run ios` | Dev build on a device or emulator |
+| `npm test` | Jest |
+| `npm run lint` | ESLint |
+| `npm run build:quran-db` | Rebuild bundled `quran.sqlite` |
+| `npm run build:apk` | Gradle `assembleRelease` |
+| `npm run build:aab` | Gradle `bundleRelease` |
+| `npm run android:clean` | Gradle `clean` |
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+AAB output: `android/app/build/outputs/bundle/release/app-release.aab`. If `:app:packageReleaseBundle` fails with Metaspace, stop daemons (`cd android && ./gradlew --stop`) and rebuild; `android/gradle.properties` already raises heap and metaspace.
 
-```sh
-bundle install
+`website/` is a separate npm project. Metro ignores it.
+
+## Ads
+
+`react-native-google-mobile-ads` (16.5.x). Consent (UMP) runs before SDK init. Keys in `.env`:
+
+```
+ADMOB_ANDROID_APP_ID=
+ADMOB_IOS_APP_ID=
+ADMOB_NATIVE_UNIT_ID=
+ADMOB_BANNER_UNIT_ID=
 ```
 
-Then, and every time you update your native dependencies, run:
+Do not commit `.env`. Do not put production unit IDs in source. Android App ID is applied from `.env` into the merged manifest; a native rebuild is required after changing it.
 
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+`com.google.android.gms.permission.AD_ID` is merged from the ads SDK. Play Console Advertising ID: **Yes**, purpose **Advertising or marketing** only.
 
 ## Website
 
-Static landing page in [`website/`](./website). It is a separate Yarn 4 project from the React Native app. GitHub Actions (`.github/workflows/pages.yml`) deploys `website/dist` to GitHub Pages when `website/**` changes on `main`. The intended address is `https://cariayat.naandalist.com`.
+Astro 5 + React + Tailwind 3. Pages: home, [privacy](https://cariayat.naandalist.com/privacy/), [terms](https://cariayat.naandalist.com/terms/). `app-ads.txt` is served from `website/public/`.
 
 ```bash
 cd website
-yarn install
-yarn dev
-yarn build
+npm install --legacy-peer-deps
+npm run dev
+npm run build
+```
+
+Output is `website/dist`. GitHub Actions (`.github/workflows/pages.yml`) deploys that folder to GitHub Pages on push to `main` when `website/**` or the workflow file changes.
+
+## Layout
+
+```
+src/app/           App root, database provider, navigation
+src/screens/       Home, results, history
+src/components/    Shared UI
+src/lib/           Search, SQLite, storage, theme, ads
+android/           Native Android project
+ios/               Native iOS project
+website/           Public landing, privacy, terms
+tools/             Quran DB build script
 ```
