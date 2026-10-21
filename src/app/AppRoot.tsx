@@ -7,12 +7,13 @@ import { RootNavigator } from 'app/navigation/RootNavigator';
 import { colors } from 'lib/theme/colors';
 import { fontFamily } from 'lib/theme/typography';
 import { DatabaseProvider } from 'app/DatabaseProvider';
+import { startMobileAds } from 'lib/ads';
 
 const AppRoot: React.FC = () => {
   useEffect(() => {
     const init = async () => {
-      // Hide splash screen after app is ready
       await BootSplash.hide({ fade: true });
+      startMobileAds();
     };
     init();
   }, []);
