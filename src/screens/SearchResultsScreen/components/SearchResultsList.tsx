@@ -2,11 +2,14 @@ import React from 'react';
 import { View, FlatList } from 'react-native';
 
 import { EmptyState } from 'components/common';
-import { VerseCard } from './VerseCard';
+import { NativeAdCard } from 'lib/ads';
 import { Verse } from 'lib/types';
+import { VerseCard } from './VerseCard';
 
 import { styles } from '../styles';
 import { SearchResultItem } from '../hooks';
+
+const AD_EVERY = 3;
 
 interface SearchResultsListProps {
   results: SearchResultItem[];
@@ -27,7 +30,7 @@ export function SearchResultsList({
     <FlatList
       data={results}
       keyExtractor={item => String(item.verse.id)}
-      renderItem={({ item }) => {
+      renderItem={({ item, index }) => {
         const highlightText =
           mode === 'terjemahan' &&
           'highlightToken' in item &&
@@ -36,13 +39,16 @@ export function SearchResultsList({
             : query;
 
         return (
-          <VerseCard
-            verse={item.verse}
-            onPress={() => onVersePress(item.verse)}
-            highlightText={highlightText}
-            highlightMode={mode}
-            score={item.score}
-          />
+          <View>
+            <VerseCard
+              verse={item.verse}
+              onPress={() => onVersePress(item.verse)}
+              highlightText={highlightText}
+              highlightMode={mode}
+              score={item.score}
+            />
+            {(index + 1) % AD_EVERY === 0 ? <NativeAdCard /> : null}
+          </View>
         );
       }}
       style={styles.listContainer}

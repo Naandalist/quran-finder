@@ -54,15 +54,16 @@ export default function SearchResultsScreen() {
         modeLabel={modeLabel}
       />
 
-      <SearchResultsList
-        results={results}
-        query={query}
-        mode={mode}
-        hasPlayer={!!currentVerse}
-        onVersePress={handleVersePress}
-      />
-
-      <FloatingAudioPlayer verse={currentVerse} onClose={handleClosePlayer} />
+      <View style={styles.resultsBody}>
+        <SearchResultsList
+          results={results}
+          query={query}
+          mode={mode}
+          hasPlayer={!!currentVerse}
+          onVersePress={handleVersePress}
+        />
+        <FloatingAudioPlayer verse={currentVerse} onClose={handleClosePlayer} />
+      </View>
     </View>
   );
 }
