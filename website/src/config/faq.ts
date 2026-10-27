@@ -17,6 +17,11 @@ export const faq: FAQ[] = [
       "Ya, aplikasi Cari Ayat dapat diunduh dan digunakan secara gratis. Fitur utama seperti pencarian berdasarkan lafaz dan terjemahan, penilaian kemiripan hasil, penyorotan lafaz, dan tampilan teks ayat dapat diakses tanpa biaya. Aplikasi menampilkan iklan di beberapa layar. Mengetuk iklan ditangani oleh Google, bukan oleh pemasang aplikasi di dalam Cari Ayat. Beberapa fitur tambahan seperti pemutaran audio dan penayangan iklan membutuhkan koneksi internet.",
   },
   {
+    question: "Berapa usia minimum untuk menggunakan Cari Ayat?",
+    answer:
+      "Cari Ayat ditujukan untuk pengguna berusia 13 tahun ke atas. Pembatasan ini terutama karena aplikasi menampilkan iklan dari Google AdMob, dan isi iklan dari pihak ketiga tidak selalu ramah untuk anak-anak. Anak-anak tetap bisa menggunakan aplikasi ini dalam mode offline (tanpa koneksi internet): iklan tidak akan muncul dan fitur pencarian ayat tetap berfungsi, hanya saja fitur pemutaran audio bacaan ayat tidak dapat digunakan. Anak-anak sebaiknya menggunakannya dengan pendampingan orang tua/wali, dan pengguna berusia 13–17 tahun juga disarankan untuk tetap didampingi.",
+  },
+  {
     question: "Apakah Cari Ayat menampilkan iklan?",
     answer:
       "Ya. Iklan dari Google AdMob dapat muncul di beranda, hasil pencarian, dan riwayat pencarian, dan ditandai dengan label Iklan agar terpisah dari teks ayat. Isi iklan berasal dari pengiklan pihak ketiga. Rincian ada di Syarat dan Ketentuan serta Kebijakan Privasi.",

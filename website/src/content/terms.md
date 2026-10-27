@@ -32,8 +32,11 @@ Konten teks Al-Qur’an, transliterasi, dan terjemahan yang digunakan diambil da
 
 ### 3.1 Kelayakan Pengguna
 
-- Aplikasi dapat digunakan oleh semua kalangan.  
-- Pengguna yang masih di bawah umur disarankan menggunakan aplikasi di bawah pendampingan orang tua/wali.  
+- Aplikasi **Cari Ayat** ditujukan untuk pengguna berusia **13 tahun ke atas**.  
+- Pembatasan usia ini terutama karena aplikasi menampilkan iklan dari Google AdMob, dan isi iklan dari pihak ketiga tidak selalu ramah untuk anak-anak.  
+- Anak-anak di bawah 13 tahun tidak termasuk target audiens aplikasi ini. Jika tetap ingin menggunakannya, mereka dapat menggunakan aplikasi dalam mode offline (tanpa koneksi internet): iklan tidak akan ditampilkan dan fitur pencarian ayat tetap berfungsi, sedangkan fitur pemutaran audio bacaan ayat tidak dapat digunakan. Penggunaan oleh anak-anak tetap harus didampingi penuh oleh orang tua/wali.  
+- Pengguna berusia 13–17 tahun disarankan menggunakan aplikasi di bawah pendampingan orang tua/wali.  
+- Dengan menggunakan aplikasi, Anda menyatakan bahwa Anda telah mencapai usia minimal 13 tahun atau telah mendapatkan persetujuan orang tua/wali untuk menggunakannya.  
 - Pengguna bertanggung jawab untuk menggunakan aplikasi secara bijak dan sesuai tujuan yang dimaksudkan (membantu pencarian ayat untuk keperluan pribadi, belajar, atau rujukan awal).
 
 ### 3.2 Penggunaan yang Diizinkan
