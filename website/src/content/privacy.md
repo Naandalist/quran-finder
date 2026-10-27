@@ -32,8 +32,7 @@ Data ini:
 - Aplikasi **Cari Ayat** ditujukan untuk pengguna berusia **13 tahun ke atas**.
 - Pembatasan usia ini terutama karena aplikasi menampilkan iklan dari Google AdMob, dan isi iklan dari pihak ketiga tidak selalu ramah untuk anak-anak.
 - Anak-anak yang tetap ingin menggunakan aplikasi ini dapat melakukannya dalam mode offline (tanpa koneksi internet): iklan tidak akan ditampilkan dan fitur pencarian ayat tetap berfungsi, sedangkan fitur pemutaran audio bacaan ayat tidak dapat digunakan.
-- Aplikasi ini **bukan** aplikasi yang ditujukan untuk anak-anak di bawah 13 tahun dan tidak secara sadar mengumpulkan data pribadi dari anak-anak di bawah 13 tahun.
-- Jika Anda adalah orang tua atau wali dan mengetahui bahwa anak Anda di bawah 13 tahun telah memberikan data pribadi kepada kami, silakan hubungi kami pada bagian 9 agar dapat kami hapus.
+- Aplikasi ini **bukan** aplikasi yang ditujukan untuk anak-anak di bawah 13 tahun, dan karena aplikasi tidak mengumpulkan data pribadi ke server pengembang (lihat bagian 2.1), tidak ada data pribadi anak yang tersimpan di sisi kami.
 
 ## 3. Koneksi Server
 
