@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, FlatList } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EmptyState } from 'components/common';
 import { NativeAdCard } from 'lib/ads';
@@ -26,6 +27,8 @@ export function SearchResultsList({
   hasPlayer,
   onVersePress,
 }: SearchResultsListProps) {
+  const insets = useSafeAreaInsets();
+
   return (
     <FlatList
       data={results}
@@ -55,6 +58,7 @@ export function SearchResultsList({
       contentContainerStyle={[
         styles.listContent,
         hasPlayer && styles.listContentWithPlayer,
+        { paddingBottom: (hasPlayer ? 100 : 12) + insets.bottom },
       ]}
       ListEmptyComponent={
         <View style={styles.emptyState}>
