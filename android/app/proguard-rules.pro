@@ -33,6 +33,14 @@
 -keep class com.swmansion.gesturehandler.** { *; }
 -keep class com.swmansion.rnscreens.** { *; }
 
+# ==================== Room / WorkManager ====================
+# Room creates the generated RoomDatabase subclass reflectively with
+# Class.newInstance(). WorkManager ships one (WorkDatabase_Impl) through
+# play-services-ads. Room's own consumer rules keep the class but not its
+# constructor, so R8 strips <init>() and the app crashes at startup with
+# "Failed to create an instance of androidx.work.impl.WorkDatabase".
+-keep class * extends androidx.room.RoomDatabase { <init>(); }
+
 # ==================== SQLite (Nitro) ====================
 -keep class com.margelo.nitro.** { *; }
 -keep class com.margelo.nitro.sqlite.** { *; }
@@ -82,3 +90,14 @@
 
 # If you keep line numbers, uncomment this to hide original source file name
 #-renamesourcefileattribute SourceFile
+
+# WorkManager (pulled in by AdMob) uses Room and loads WorkDatabase_Impl by reflection.
+# Without these, R8 strips/renames it and the app crashes at startup in release builds.
+-keep class * extends androidx.room.RoomDatabase { <init>(...); }
+-keep class androidx.work.impl.WorkDatabase { *; }
+-keep class androidx.work.impl.WorkDatabase_Impl { *; }
+-keep class androidx.work.** { *; }
+-keep class androidx.room.** { *; }
+-keep class androidx.startup.** { *; }
+-dontwarn androidx.room.**
+-dontwarn androidx.work.**
