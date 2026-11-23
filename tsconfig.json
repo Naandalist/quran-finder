@@ -1,12 +1,15 @@
 {
   "extends": "@react-native/typescript-config",
   "compilerOptions": {
-    "baseUrl": "./src",
     "paths": {
-      "screens/*": ["screens/*"],
-      "components/*": ["components/*"],
-      "lib/*": ["lib/*"],
-      "app/*": ["app/*"]
+      "screens": ["./src/screens"],
+      "screens/*": ["./src/screens/*"],
+      "components": ["./src/components"],
+      "components/*": ["./src/components/*"],
+      "lib": ["./src/lib"],
+      "lib/*": ["./src/lib/*"],
+      "app": ["./src/app"],
+      "app/*": ["./src/app/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "types/**/*.d.ts"],
