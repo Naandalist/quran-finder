@@ -2,7 +2,7 @@
  * Pre-bundled database asset management.
  * Handles copying SQLite from Android assets to app files directory.
  */
-import RNFS from 'react-native-fs';
+import * as RNFS from '@dr.pogodin/react-native-fs';
 import { mmkv } from 'lib/storage';
 
 export const DATABASE_NAME = 'quran.sqlite';
