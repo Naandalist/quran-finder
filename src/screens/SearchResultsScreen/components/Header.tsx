@@ -16,7 +16,7 @@ export function Header({ onBackPress }: HeaderProps) {
 
   return (
     <View style={[styles.headerContainer, { paddingTop: insets.top }]}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.teal} />
+      <StatusBar barStyle="light-content" />
       <View style={styles.headerContent}>
         <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
           <ArrowLeft size={24} color={colors.white} />

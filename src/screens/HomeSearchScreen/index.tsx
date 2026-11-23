@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BannerAdSlot } from 'lib/ads';
+import { spacing } from 'lib/theme/spacing';
 
 import { styles } from './styles';
 import { useHomeSearch } from './hooks';
@@ -13,6 +15,7 @@ import {
 } from './components';
 
 export default function HomeSearchScreen() {
+  const insets = useSafeAreaInsets();
   const {
     query,
     mode,
@@ -35,14 +38,16 @@ export default function HomeSearchScreen() {
 
   return (
     <View style={styles.screenWrap}>
+      <StatusBar barStyle="light-content" />
       <ScrollView
         ref={scrollViewRef}
         style={styles.scrollContainer}
+        contentContainerStyle={{ paddingBottom: insets.bottom }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         {/* Hero Section */}
-        <View style={styles.heroSection}>
+        <View style={[styles.heroSection, { paddingTop: insets.top + spacing.xl }]}>
           <HeroSection />
           <SearchCard
             query={query}

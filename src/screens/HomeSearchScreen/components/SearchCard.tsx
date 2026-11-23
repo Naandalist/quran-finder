@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Animated,
 } from 'react-native';
+import type { TextInputInstance } from 'react-native';
 
 import { QueryMode } from 'lib/types';
 import { ChevronDown } from 'components/icons';
@@ -18,7 +19,7 @@ interface SearchCardProps {
   mode: QueryMode;
   queryError: string;
   placeholder: string;
-  inputRef: RefObject<TextInput | null>;
+  inputRef: RefObject<TextInputInstance | null>;
   shakeAnimation: Animated.Value;
   onQueryChange: (text: string) => void;
   onSubmit: () => void;

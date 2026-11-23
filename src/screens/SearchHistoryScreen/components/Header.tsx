@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ArrowLeft } from 'components/icons';
 import { colors } from 'lib/theme/colors';
@@ -13,8 +14,11 @@ interface HeaderProps {
 }
 
 export function Header({ onBackPress, showClearAll, onClearAll }: HeaderProps) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+      <StatusBar barStyle="dark-content" />
       <TouchableOpacity style={styles.backButton} onPress={onBackPress}>
         <ArrowLeft size={24} color={colors.gray800} />
       </TouchableOpacity>

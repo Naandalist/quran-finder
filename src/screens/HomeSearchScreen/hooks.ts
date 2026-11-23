@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
-import { TextInput, ScrollView, Animated } from 'react-native';
+import { Animated } from 'react-native';
+import type { ScrollViewInstance, TextInputInstance } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as yup from 'yup';
@@ -152,8 +153,8 @@ export function useHomeSearch() {
   const [queryError, setQueryError] = useState('');
 
   // Refs
-  const inputRef = useRef<TextInput>(null);
-  const scrollViewRef = useRef<ScrollView>(null);
+  const inputRef = useRef<TextInputInstance>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
 
   // Hooks
   const { shakeAnimation, triggerShake } = useShakeAnimation();
